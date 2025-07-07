@@ -139,10 +139,10 @@ body:has(.loupe:target) {
     </picture>
     <div class="nav-pads">
         {% if not loop.first %}
-        <a class="nav-pad-left" href="#photo-{{ loop.index - 1 }}">🡰</a>
+        <a class="nav-pad-left" href="#photo-{{ loop.index - 1 }}" title="Previous image in gallery">🡰</a>
         {% endif %}
         {% if not loop.last %}
-        <a class="nav-pad-right" href="#photo-{{ loop.index + 1}}">🡲</a>
+        <a class="nav-pad-right" href="#photo-{{ loop.index + 1}}" title="Next image in gallery">🡲</a>
         {% endif %}
         <a class="nav-pad-up" href="#" title="Go back to gallery">🡱</a>
     </div>
@@ -153,5 +153,25 @@ body:has(.loupe:target) {
     </div>
 </div>
 {% endfor %}
+<script>
+window.addEventListener("keydown", function keyDown(ev) {
+    const padName = {
+        "ArrowLeft": "left",
+        "PageUp": "left",
+        "ArrowRight": "right",
+        "PageDown": "right",
+        "Escape": "up",
+        "Backspace": "up",
+        "ArrowUp": "up",
+    }[ev.key];
+    if (!padName)
+        return;
+    const pad = document.querySelector(`.loupe:target .nav-pad-${padName}`);
+    if (!pad)
+        return; // not in loupe
+    ev.preventDefault();
+    pad.click();
+});
+</script>
 </body>
 </html>
