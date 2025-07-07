@@ -1,0 +1,431 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+from collections.abc import Sequence
+from itertools import chain
+import json
+import shutil
+import subprocess
+import PIL.ImageOps
+import jinja2
+from natsort import natsorted
+import numpy as np
+import PIL
+from pathlib import Path
+from dataclasses import dataclass
+from typing import Any, Callable, Iterable, Literal, NamedTuple, Optional, TypedDict, cast
+
+import PIL.Image
+import urllib.parse
+
+type ImageKind = Literal["contacts", "loupe"]
+@dataclass
+class ImageFormat:
+    name: str
+    extension: str
+    save_opts_fn: Callable[[int, ImageKind], dict[str, Any]]
+
+def save_opts_avif(side: int, kind: ImageKind):
+    if kind == "contacts":
+        quality = 50
+    elif side >= 5120:
+        # At high resolutions it can be difficult to tell the originals apart
+        # without doing pixel-peeping.
+        quality = 55
+    elif side >= 4096:
+        quality = 60
+    elif side >= 2560:
+        quality = 70
+    else:
+        # High quality number is necessary for small photo sizes to prevent ISO
+        # noise from becoming oddly soft and patchy.
+        quality = 80
+    return dict(quality=quality)
+def save_opts_jpeg(side: int, kind: ImageKind) -> dict[str, Any]:
+    opts = save_opts_avif(side, kind)
+    if kind == "contacts":
+        opts["quality"] = 70
+    opts["progressive"] = True
+    opts["optimize"] = True
+    return opts
+def save_opts_default(side: int, kind: ImageKind) -> dict[str, Any]:
+    return {}
+
+IMAGE_FORMATS = (
+    ImageFormat(
+        name="avif",
+        extension="avif",
+        save_opts_fn=save_opts_avif,
+    ),
+    ImageFormat(
+        name="jpeg",
+        extension="jpg",
+        save_opts_fn=save_opts_jpeg,
+    ),
+    # # Useful only for debugging and image quality assesment:
+    # ImageFormat(
+    #     name="png",
+    #     extension="png",
+    #     save_opts_fn=save_opts_default,
+    # ),
+)
+SUPPORTED_SRC_EXTENSIONS = {".jpg", ".jpeg", ".png", ".tif", ".tiff", ".bmp",
+    ".jxl", ".webp", ".heic", ".avif", ".jp2", ".jpx", ".jpf", ".jpg2"}
+THUMBS_DIR = ".thumbs"
+
+@dataclass
+class Config:
+    contact_thumb_height_logical: int = 300
+    """
+    Height in CSS pixels of each image thumbnails.
+
+    In the contact sheet thumbnails have fixed height, so that they can flow
+    and overflow into multiple lines without varying vertical gaps.
+    """
+
+    contact_thumb_dpr: Sequence[int] = (1, 2, 3)
+    """
+    How many versions of the thumbnails for different Device Pixel Ratios.
+    At DPR of 2, thumnails will be generated for 2 times the logical height of
+    the thumbnail.
+    """
+
+    loupe_thumb_sizes: Sequence[int] = (
+        # (No need for less than 720p, since computers with displays smaller
+        # than that, e.g. 1024x768, 800x600, are unlikely to be used to browse
+        # the web in 2025)
+        1440, # 720p, 1366x768, 1440x1080
+        1920, # 1080p, 1600x1200, 1920x1200
+        2560, # 1440p at 16:9, 16:10 or 3:2
+        4096, # 4K (both DCI 4K and UHD 4K)
+        5120, # 5K UHD, 5K Ultrawide
+        8192, # 8K (both Full Format 8K and UHD 8K) -- will usually not be used
+              # as it's bigger than most camera sensors.
+    )
+    """
+    Sizes for which loupe (full screen) thumbnails will be generated, other than
+    the native image size.
+
+    The integers provided here represent a square: that is, 800 means 800x800.
+
+    Thumbnails that would be larger than the original image are skipped.
+    Additionally, a thumbnail for the original size is always generated.
+
+    In loupe mode the JS code will download the smallest thumbnail where the
+    entire image can fit fullscreen in both landscape and portrait orientations.
+
+    Having more sizes available results in using less bandwidth and faster
+    browser rendering for no loss in quality, but more server disk usage.
+    """
+
+    loupe_thumb_max_dpr = 999
+    """
+    Maximum Device Pixel Ratio that will be tolerated when calculating the full
+    screen size to use for choosing thumbnails.
+
+    If a device has a ridiculously dense screen (even after accounting for
+    viewer distance), downloading thumbnails with the native screen resolution
+    may be a waste of bandwidth and load times.
+
+    This is particularly relevant with modern smartphones (OnePlus 12R has
+    450ppi, DPR 3.52).
+    """
+
+class URLWithSize(TypedDict):
+    w: int
+    h: int
+    url: str
+
+class ContactSheet(TypedDict):
+    dpr: int
+    w: int
+    h: int
+    url_by_format: DictByFormat[str]
+
+type DictByFormat[T] = dict[str, T]
+
+class Album(TypedDict):
+    """
+    Template context with data for the entire album.
+    """
+    name: str
+    contact_height_logical: int
+    contact_sheet_width_logical: int
+    contact_sheet_height_logical: int
+    contact_sheets: list[ContactSheet]
+    photos: Sequence[PhotoData]
+
+class PhotoLoupeData(TypedDict):
+    """
+    Data about a single photo generated by render_loupe_thumbs()
+    """
+    orig_width: int
+    orig_height: int
+    orig_url: str
+    loupe_thumbs: DictByFormat[list[URLWithSize]]
+class PhotoData(PhotoLoupeData):
+    """
+    Data about a photo available inside the template context.
+    """
+    exif: ExifMeta
+    contact_region: Region
+
+class ExifMeta(TypedDict):
+    # Useful keys from `exiftool -json -api structformat=jsonq`, mostly for
+    # reference.
+    # Table of composite values, generated by exiftool from other values:
+    # https://exiftool.org/TagNames/Composite.html
+    FocalLengthIn35mmFormat: Optional[str]
+    FocalLength: Optional[str]
+    Aperture: Optional[str]  # Composite: FNumber, ApertureValue
+    ISO: Optional[str]  # Composite
+    ExposureTime: Optional[str]
+    LensInfo: Optional[str] # "24-240mm f/3.5-6.3"
+    Flash: Optional[str]
+
+class Region(NamedTuple):
+    x: int
+    y: int
+    w: int
+    h: int
+
+def extract_exif(photos: Iterable[Path | str]) -> list[ExifMeta]:
+    args = list(chain(
+        ['exiftool', '-quiet', '-json', '-api', 'structformat=jsonq', '-sep', ', ', '--'],
+        map(str, photos)
+    ))
+    stdout = subprocess.check_output(args)
+    return cast(list[ExifMeta], json.loads(stdout.decode()))
+
+@dataclass(frozen=True)
+class SheetPlanLogical:
+    """Contact sheet plan in CSS pixels."""
+    sheet_width: int
+    sheet_height: int
+    padding: int
+    regions: tuple[Region, ...]
+    def scale_by_dpr(self, dpr: int) -> SheetPlanDevice:
+        return SheetPlanDevice(
+            sheet_height=self.sheet_height*dpr,
+            sheet_width=self.sheet_width*dpr,
+            padding=self.padding*dpr,
+            regions=tuple(
+                Region(r.x*dpr, r.y*dpr, r.w*dpr, r.h*dpr)
+                for r in self.regions
+            )
+        )
+@dataclass(frozen=True)
+class SheetPlanDevice:
+    """Contact sheet plan in display pixels (CSS pixels * DPR)."""
+    sheet_width: int
+    sheet_height: int
+    padding: int
+    regions: tuple[Region, ...]
+
+def gen_contact_sheet_plan(photo_sizes: Iterable[tuple[int, int]], thumb_h: int) -> SheetPlanLogical:
+    regions: list[Region] = []
+    row_index = 0
+    cursor_x = 0
+    line_width_goal = thumb_h * 8
+    padding = 4
+    sheet_width = 1
+    for src_w, src_h in photo_sizes:
+        thumb_w = round((thumb_h * src_w) / src_h / 4) * 4
+
+        if cursor_x > 0 and cursor_x + thumb_w + 2 * padding > line_width_goal: # overflow
+            cursor_x = 0
+            row_index += 1
+        region_x = cursor_x + padding
+        region_y = padding + (padding * 2 + thumb_h) * row_index
+        regions.append(Region(region_x, region_y, thumb_w, thumb_h))
+        cursor_x += padding + thumb_w + padding
+        sheet_width = max(sheet_width, cursor_x)
+    sheet_height = (row_index + 1) * (thumb_h + 2 * padding)
+    return SheetPlanLogical(sheet_width, sheet_height, padding, tuple(regions))
+
+def image_open(path: Path | str) -> PIL.Image.Image:
+    # Small wrapper to open an image and rotate following the EXIF tags if needed.
+    im = PIL.Image.open(path)
+    PIL.ImageOps.exif_transpose(im, in_place=True)
+    return im
+
+def render_contact_sheet(photos: Sequence[Path | str],
+    logical_plan: SheetPlanLogical, dpr: int, out_dir: Path
+) -> ContactSheet:
+    WHITE = (255, 255, 255)
+    plan = logical_plan.scale_by_dpr(dpr)
+    padding = plan.padding
+    with PIL.Image.new("RGB", (plan.sheet_width, plan.sheet_height), WHITE) as sheet:
+        for file_name, region in zip(photos, plan.regions):
+            with image_open(file_name) as im:
+                with im.resize((region.w, region.h)) as thumb:
+                    sheet.paste(thumb, (region.x, region.y))
+        px = np.asarray(sheet).copy()
+
+    # Extend edges to prevent images from bleeding into each other due to chroma subsampling
+    for (in_x, in_y, in_w, in_h) in plan.regions:
+        out_x, out_y = in_x - padding, in_y - padding
+        in_horiz = slice(in_x, in_x + in_w)
+        # Top
+        px[out_y:in_y, in_horiz] = px[in_y, in_horiz]
+        # Bottom
+        in_y_end = in_y + in_h
+        out_y_end = in_y_end + padding
+        px[in_y_end:out_y_end, in_horiz] = px[in_y_end-1, in_horiz]
+
+        px = px.swapaxes(0, 1)
+        in_vert = slice(in_y, in_y + in_h)
+        # Left
+        px[out_x:in_x, in_vert] = px[in_x, in_vert]
+        # Right
+        in_x_end = in_x + in_w
+        out_x_end = in_x_end + padding
+        px[in_x_end:out_x_end, in_vert] = px[in_x_end-1, in_vert]
+
+        px = px.swapaxes(0, 1)
+        # Top left
+        px[out_y:in_y, out_x:in_x] = px[in_y, in_x]
+        # Top right
+        px[out_y:in_y, in_x_end:out_x_end] = px[in_y, in_x_end-1]
+        # Bottom left
+        px[in_y_end:out_y_end, out_x:in_x] = px[in_y_end-1, in_x]
+        # Bottom right
+        px[in_y_end:out_y_end, in_x_end:out_x_end] = px[in_y_end-1, in_x_end-1]
+
+    url_by_format: DictByFormat[str] = {}
+    with PIL.Image.fromarray(px) as sheet:
+        for format in IMAGE_FORMATS:
+            opts = format.save_opts_fn(max(sheet.size), "contacts")
+            contacts_path = Path(out_dir/THUMBS_DIR/f'contacts_dpr{dpr}.{format.extension}')
+            sheet.save(contacts_path, **opts)
+            url_by_format[format.name] = path_to_rel_url(contacts_path, out_dir)
+    return {
+        "dpr": dpr, "w": plan.sheet_width, "h": plan.sheet_height,
+        "url_by_format": url_by_format
+    }
+
+
+def size_to_fit(side: int, src_size: tuple[int, int]) -> tuple[int, int]:
+    src_w, src_h = src_size
+    if src_w >= src_h:
+        thumb_w = side
+        thumb_h = round((side * src_h) / src_w)
+    else:
+        thumb_w = round((side * src_w) / src_h)
+        thumb_h = side
+    return thumb_w, thumb_h
+
+def calc_loupe_thumbs(src_size: tuple[int, int], desired_sizes: Sequence[int]) -> list[tuple[str, tuple[int, int]]]:
+    useful_sizes: list[tuple[str, tuple[int, int]]] = []
+    for side in desired_sizes:
+        if max(src_size) <= side:
+            break
+        size = size_to_fit(side, src_size)
+        useful_sizes.append((str(side), size))
+    useful_sizes.append(("orig", src_size))
+    return useful_sizes
+
+def gen_loupe_thumbs(src_im: PIL.Image.Image, desired_sizes: Sequence[int]) -> Iterable[tuple[str, PIL.Image.Image]]:
+    for size_name, thumb_size in calc_loupe_thumbs(src_im.size, desired_sizes):
+        if size_name == "orig":
+            yield size_name, src_im
+            return
+        with src_im.resize(thumb_size) as thumb:
+            yield size_name, thumb
+
+def path_to_rel_url(path: Path, base: Path) -> str:
+    return "/".join(
+        urllib.parse.quote(part)
+        for part in path.relative_to(base).parts
+    )
+
+def render_loupe_thumbs(photo_paths: Iterable[Path], desired_sizes: Sequence[int], out_dir: Path) -> list[PhotoLoupeData]:
+    rendered_photos: list[PhotoLoupeData] = []
+    for src_path in photo_paths:
+        assert src_path.exists()
+        assert src_path.is_relative_to(out_dir)
+        with image_open(src_path) as src_im:
+            thumbs_by_format: DictByFormat[list[URLWithSize]] = {
+                format.name: []
+                for format in IMAGE_FORMATS
+            }
+            for size_name, thumb in gen_loupe_thumbs(src_im, desired_sizes):
+                for format in IMAGE_FORMATS:
+                    thumb_path = Path(out_dir/THUMBS_DIR/format.name/f'loupe_{size_name}'/
+                        f'thumb_{size_name}_{src_path.stem}.{format.extension}')
+                    thumb_path.parent.mkdir(exist_ok=True, parents=True)
+                    opts = format.save_opts_fn(max(thumb.size), "loupe")
+                    thumb.save(thumb_path, **opts)
+                    thumbs_by_format[format.name].append({
+                        "w": thumb.size[0], "h": thumb.size[1],
+                        "url": path_to_rel_url(thumb_path, out_dir)
+                    })
+        rendered_photos.append({
+            "orig_width": src_im.size[0], "orig_height": src_im.size[1],
+            "orig_url": path_to_rel_url(src_path, out_dir),
+            "loupe_thumbs": thumbs_by_format,
+        })
+    return rendered_photos
+
+def gen_gallery(config: Config, src_dir: Path, out_dir: Path):
+    assert src_dir
+    out_dir.mkdir(exist_ok=True)
+    file_names = natsorted([
+        f.name
+        for f in src_dir.iterdir()
+        if f.is_file() and f.suffix.lower() in SUPPORTED_SRC_EXTENSIONS
+    ])
+    for name in file_names:
+        shutil.copyfile(src_dir/name, out_dir/name)
+    # The copies we just made are the originals as far as thumbnail generation
+    # and template rendering is concerned.
+
+    photo_paths = [out_dir/name for name in file_names]
+    exifs = extract_exif(photo_paths)
+    loupe_datas = render_loupe_thumbs(
+        photo_paths=photo_paths,
+        desired_sizes=config.loupe_thumb_sizes,
+        out_dir=out_dir)
+    photo_sizes = [(p["orig_width"], p["orig_height"]) for p in loupe_datas]
+    plan = gen_contact_sheet_plan(photo_sizes, thumb_h=config.contact_thumb_height_logical)
+
+    # Now we have all the data necessary to generate the PhotoData objects.
+    photos: list[PhotoData] = [
+        {"exif": exif, "contact_region": region, **loupe}
+        for loupe, exif, region in zip(loupe_datas, exifs, plan.regions)
+    ]
+
+    contact_sheets: list[ContactSheet] = []
+    for dpr in config.contact_thumb_dpr:
+        contact_sheet = render_contact_sheet(photo_paths, plan, dpr, out_dir)
+        contact_sheets.append(contact_sheet)
+
+    album: Album = {
+        "name": src_dir.name,
+        "contact_height_logical": config.contact_thumb_height_logical,
+        "contact_sheet_width_logical": plan.sheet_width,
+        "contact_sheet_height_logical": plan.sheet_height,
+        "contact_sheets": contact_sheets,
+        "photos": photos,
+    }
+    with open(out_dir/"album.json", "w") as f:
+        json.dump(album, f, indent=2)
+
+def render_html(out_dir: Path):
+    with open(out_dir/"album.json", "r") as f:
+        album = json.load(f)
+    env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(Path(__file__).parent/"templates"),
+        autoescape=jinja2.select_autoescape(),
+        undefined=jinja2.StrictUndefined,
+        trim_blocks=True,
+        lstrip_blocks=True,
+        keep_trailing_newline=False,
+    )
+    template = env.get_template("index.html.j2")
+    html = template.render(album=album)
+    with open(out_dir/"index.html", "w") as f:
+        f.write(html)
+
+# shutil.rmtree(Path("out"), ignore_errors=True)
+# gen_gallery(Config(), Path(Path(__file__).parent/"test-albums/2021-08-01 Orsted Park"), Path("out"))
+render_html(Path("out"))

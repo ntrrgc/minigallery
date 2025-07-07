@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="shortcut icon" href="data:," />
+<title>{{ album.name }}</title>
+<style>
+*, *:before, *:after {
+  box-sizing: border-box; /* https://wiki.csswg.org/ideas/mistakes */
+}
+{% for sheet in album.contact_sheets %}
+{% if not loop.first %}
+@media (min-resolution: {{sheet.dpr}}x) {
+{% endif %}
+    .contact {
+        background-image: image-set(
+            {% for format, url in sheet.url_by_format|items %}
+            "{{ url | urlencode}}" type("image/{{ format }}")
+            {%- if not loop.last %}, {% endif +%}
+            {% endfor %}
+        );
+    }
+{% if not loop.first %}
+}
+{% endif %}
+{%- endfor %}
+#contact-sheet {
+    display: flex;
+    flex-flow: row wrap;
+}
+.contact {
+    display: block;
+    background-size: {{album.contact_sheet_width_logical}}px {{album.contact_sheet_height_logical}}px;
+    height: {{ album.contact_height_logical }}px;
+}
+.loupe {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: black;
+}
+.loupe:target {
+    display: block; /* Make visible */
+}
+body:has(.loupe:target) {
+    overflow: hidden; /* Disable scroll bars while in the loupe */
+}
+.loupe-picture {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+.loupe-picture > img {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+}
+.nav-pad-left, .nav-pad-right {
+    display: block;
+    position: fixed;
+    top: 0; bottom: 0;
+    width: 30vw;
+    color: white;
+    text-shadow: 0 0 5px black;
+    font-size: 52px;
+    line-height: 100vh;
+    text-decoration: none;
+    opacity: 0;
+}
+.nav-pad-left:hover, .nav-pad-right:hover {
+    opacity: 1;
+}
+.nav-pad-left {
+    text-align: left;
+    left: 0;
+    padding-left: 10px;
+}
+.nav-pad-right {
+    text-align: right;
+    right: 0;
+    padding-right: 10px;
+}
+</style>
+</head>
+<body>
+<header>
+    <h1>{{ album.name }}</h1>
+</header>
+<div id="contact-sheet">
+    {%- for photo in album.photos %}
+    <a class="contact" href="#photo-{{loop.index}}" style="
+     width: {{photo.contact_region.2}}px;
+     background-position: -{{photo.contact_region.0}}px -{{photo.contact_region.1}}px;
+    "></a>
+    {%- endfor %}
+</div>
+{% for photo in album.photos %}
+<div class="loupe" id="photo-{{ loop.index }}">
+    <picture class="loupe-picture">
+        {% for format, thumbs in photo.loupe_thumbs|items %}
+        {% for thumb in thumbs|reverse %}
+        <source type="image/{{format}}"
+         {% if not loop.last %}
+         media="((orientation: portrait) and (height >= {{ thumb.h }})) or
+                ((orientation: landscape) and (width >= {{ thumb.w }}))"
+         {% endif %}
+         srcset="{{ thumb.url|urlencode }} {{ thumb.w }}w">
+        {% endfor %}
+        {% endfor %}
+        <img style="aspect-ratio: {{photo.orig_width}}/{{photo.orig_height}};">
+    </picture>
+    <div class="nav-pads">
+        {% if not loop.first %}
+        <a class="nav-pad-left" href="#photo-{{ loop.index - 1 }}">🡰</a>
+        {% endif %}
+        {% if not loop.last %}
+        <a class="nav-pad-right" href="#photo-{{ loop.index + 1}}">🡲</a>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
+</body>
+</html>
