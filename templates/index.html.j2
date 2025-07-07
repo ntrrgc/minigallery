@@ -7,7 +7,7 @@
 <title>{{ album.name }}</title>
 <style>
 *, *:before, *:after {
-  box-sizing: border-box; /* https://wiki.csswg.org/ideas/mistakes */
+    box-sizing: border-box;
 }
 {% for sheet in album.contact_sheets %}
 {% if not loop.first %}
@@ -57,20 +57,31 @@ body:has(.loupe:target) {
     max-height: 100%;
     display: block;
 }
-.nav-pad-left, .nav-pad-right {
+.nav-pad-left, .nav-pad-right, .nav-pad-up {
     display: block;
     position: fixed;
-    top: 0; bottom: 0;
-    width: 30vw;
     color: white;
     text-shadow: 0 0 5px black;
     font-size: 52px;
-    line-height: 100vh;
     text-decoration: none;
     opacity: 0;
 }
-.nav-pad-left:hover, .nav-pad-right:hover {
+.nav-pad-left:hover, .nav-pad-right:hover, .nav-pad-up:hover {
     opacity: 1;
+}
+.nav-pad-left, .nav-pad-right {
+    top: 0; bottom: 0;
+    width: 30vw;
+    line-height: 100vh;
+}
+.nav-pad-up {
+    top: 0px;
+    width: 40vw;
+    height: 30vh;
+    padding-top: 20px;
+    align-content: top;
+    left: 0; right: 0; margin: 0 auto; /* center pad horizontally */
+    text-align: center;
 }
 .nav-pad-left {
     text-align: left;
@@ -81,6 +92,21 @@ body:has(.loupe:target) {
     text-align: right;
     right: 0;
     padding-right: 10px;
+}
+.photo-exif {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(127, 127, 127, 0.5);
+    color: white;
+    text-shadow: 0 0 5px black;
+    padding: 10px;
+    font-family: sans-serif;
+    border-radius: 2px;
+    font-size: 16px;
+}
+.photo-exif p {
+    margin: 0;
 }
 </style>
 </head>
@@ -118,6 +144,12 @@ body:has(.loupe:target) {
         {% if not loop.last %}
         <a class="nav-pad-right" href="#photo-{{ loop.index + 1}}">🡲</a>
         {% endif %}
+        <a class="nav-pad-up" href="#" title="Go back to gallery">🡱</a>
+    </div>
+    <div class="photo-exif">
+        {% set e = photo.exif %}
+        <p>{{e.FocalLengthIn35mmFormat}}<sup><abbr title="35mm equivalent focal length">eq</abbr></sup>
+        {{e.ExposureTime}} f/{{e.Aperture}} ISO{{e.ISO}}</p>
     </div>
 </div>
 {% endfor %}
