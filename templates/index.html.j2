@@ -46,6 +46,10 @@
 body:has(.loupe:target) {
     overflow: hidden; /* Disable scroll bars while in the loupe */
 }
+body:has(.loupe:target) #contact-sheet {
+    /* Prevent tab key from reaching the contact sheet while in the loupe. */
+    visibility: hidden;
+}
 .loupe-picture {
     display: flex;
     justify-content: center;
