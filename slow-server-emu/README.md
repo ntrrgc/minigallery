@@ -92,7 +92,7 @@ In the Performance tab, click "Start recording". Then press Ctrl+R to reload the
 
 Firefox Profiler opens. Click on the "Network" track to get a waterfall chart.
 
-![Waterfall in Firefox](image/waterfall_firefox.png)
+![Waterfall in Firefox](images/waterfall_firefox.png)
 
 ### Intepreting the waterfall
 
