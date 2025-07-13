@@ -7,9 +7,9 @@
 {# Issue: doesn't actually work well with DPR > 1. #}
 <link rel="preload" as="image" fetchpriority="high" imagesrcset="
 {%- for sheet in album.contact_sheets -%}
-{{ sheet.url_by_format.avif | urlencode }} {{ sheet.dpr }}x
+{{ sheet.url_by_format.jpeg | urlencode }} {{ sheet.dpr }}x
 {%- if not loop.last %}, {% endif %}
-{%- endfor %}" type="image/avif">
+{%- endfor %}" type="image/jpeg">
 <link rel="shortcut icon" href="data:," />
 <title>{{ album.name }}</title>
 <style>

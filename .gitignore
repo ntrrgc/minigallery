@@ -1,6 +1,6 @@
-out/
-test-albums/
-slow-server-emu/cert.pem
-slow-server-emu/key.pem
-slow-server-emu/sslkey.log
-slow-server-emu/*.pcapng*
+/out/
+/test-albums/
+/slow-server-emu/cert.pem
+/slow-server-emu/key.pem
+/slow-server-emu/sslkey.log
+/slow-server-emu/*.pcapng*

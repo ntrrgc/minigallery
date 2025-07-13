@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preload" as="image" fetchpriority="high" imagesrcset=".thumbs/contacts_dpr1.jpg 1x, .thumbs/contacts_dpr2.jpg 2x, .thumbs/contacts_dpr3.jpg 3x" type="image/jpeg">
+<link rel="shortcut icon" href="data:," />
+<title>2021-08-01 Orsted Park</title>
+<style>
+*, *:before, *:after {
+    box-sizing: border-box;
+}
+    .contact {
+        background-image: image-set(
+            ".thumbs/contacts_dpr1.jpg" type("image/jpeg")
+        );
+    }
+@media (min-resolution: 2x) {
+    .contact {
+        background-image: image-set(
+            ".thumbs/contacts_dpr2.jpg" type("image/jpeg")
+        );
+    }
+}
+@media (min-resolution: 3x) {
+    .contact {
+        background-image: image-set(
+            ".thumbs/contacts_dpr3.jpg" type("image/jpeg")
+        );
+    }
+}
+#contact-sheet {
+    display: flex;
+    flex-flow: row wrap;
+}
+.contact {
+    display: block;
+    background-size: 2244px 924px;
+    height: 300px;
+}
+.loupe {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: black;
+}
+.loupe:target {
+    display: block; /* Make visible */
+}
+body:has(.loupe:target) {
+    overflow: hidden; /* Disable scroll bars while in the loupe */
+}
+body:has(.loupe:target) #contact-sheet {
+    /* Prevent tab key from reaching the contact sheet while in the loupe. */
+    visibility: hidden;
+}
+.loupe-picture {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+.loupe-picture > img {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+}
+.nav-pad-left, .nav-pad-right, .nav-pad-up {
+    display: block;
+    position: fixed;
+    color: white;
+    text-shadow: 0 0 5px black;
+    font-size: 52px;
+    text-decoration: none;
+    opacity: 0;
+}
+.nav-pad-left:hover, .nav-pad-right:hover, .nav-pad-up:hover,
+.nav-pad-left:focus, .nav-pad-right:focus, .nav-pad-up:focus {
+    opacity: 1;
+}
+.nav-pad-left, .nav-pad-right {
+    top: 0; bottom: 0;
+    width: 30vw;
+    line-height: 100vh;
+}
+.nav-pad-up {
+    top: 0px;
+    width: 40vw;
+    height: 30vh;
+    padding-top: 20px;
+    align-content: top;
+    left: 0; right: 0; margin: 0 auto; /* center pad horizontally */
+    text-align: center;
+}
+.nav-pad-left {
+    text-align: left;
+    left: 0;
+    padding-left: 10px;
+}
+.nav-pad-right {
+    text-align: right;
+    right: 0;
+    padding-right: 10px;
+}
+.photo-exif {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(127, 127, 127, 0.5);
+    color: white;
+    text-shadow: 0 0 5px black;
+    padding: 10px;
+    font-family: sans-serif;
+    border-radius: 2px;
+    font-size: 16px;
+}
+.photo-exif p {
+    margin: 0;
+}
+</style>
+</head>
+<body>
+<header>
+    <h1>2021-08-01 Orsted Park</h1>
+</header>
+<div id="contact-sheet">    <a class="contact" href="#photo-1" style="
+     width: 448px;
+     background-position: -4px -4px;
+    "></a>    <a class="contact" href="#photo-2" style="
+     width: 448px;
+     background-position: -460px -4px;
+    "></a>    <a class="contact" href="#photo-3" style="
+     width: 500px;
+     background-position: -916px -4px;
+    "></a>    <a class="contact" href="#photo-4" style="
+     width: 336px;
+     background-position: -1424px -4px;
+    "></a>    <a class="contact" href="#photo-5" style="
+     width: 448px;
+     background-position: -1768px -4px;
+    "></a>    <a class="contact" href="#photo-6" style="
+     width: 472px;
+     background-position: -4px -312px;
+    "></a>    <a class="contact" href="#photo-7" style="
+     width: 444px;
+     background-position: -484px -312px;
+    "></a>    <a class="contact" href="#photo-8" style="
+     width: 440px;
+     background-position: -936px -312px;
+    "></a>    <a class="contact" href="#photo-9" style="
+     width: 448px;
+     background-position: -1384px -312px;
+    "></a>    <a class="contact" href="#photo-10" style="
+     width: 400px;
+     background-position: -1840px -312px;
+    "></a>    <a class="contact" href="#photo-11" style="
+     width: 436px;
+     background-position: -4px -620px;
+    "></a>    <a class="contact" href="#photo-12" style="
+     width: 448px;
+     background-position: -448px -620px;
+    "></a>    <a class="contact" href="#photo-13" style="
+     width: 176px;
+     background-position: -904px -620px;
+    "></a></div>
+<div class="loupe" id="photo-1">
+    <picture class="loupe-picture">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 4000)) or
+                ((orientation: landscape) and (width >= 6000))"
+         srcset=".thumbs/avif/loupe_orig/thumb_orig_2021_08_01_C__DSC05626-Edit.avif 6000w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 3413)) or
+                ((orientation: landscape) and (width >= 5120))"
+         srcset=".thumbs/avif/loupe_5120/thumb_5120_2021_08_01_C__DSC05626-Edit.avif 5120w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 2731)) or
+                ((orientation: landscape) and (width >= 4096))"
+         srcset=".thumbs/avif/loupe_4096/thumb_4096_2021_08_01_C__DSC05626-Edit.avif 4096w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1707)) or
+                ((orientation: landscape) and (width >= 2560))"
+         srcset=".thumbs/avif/loupe_2560/thumb_2560_2021_08_01_C__DSC05626-Edit.avif 2560w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1280)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/avif/loupe_1920/thumb_1920_2021_08_01_C__DSC05626-Edit.avif 1920w">
+        <source type="image/avif"
+         srcset=".thumbs/avif/loupe_1440/thumb_1440_2021_08_01_C__DSC05626-Edit.avif 1440w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 4000)) or
+                ((orientation: landscape) and (width >= 6000))"
+         srcset=".thumbs/jpeg/loupe_orig/thumb_orig_2021_08_01_C__DSC05626-Edit.jpg 6000w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 3413)) or
+                ((orientation: landscape) and (width >= 5120))"
+         srcset=".thumbs/jpeg/loupe_5120/thumb_5120_2021_08_01_C__DSC05626-Edit.jpg 5120w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 2731)) or
+                ((orientation: landscape) and (width >= 4096))"
+         srcset=".thumbs/jpeg/loupe_4096/thumb_4096_2021_08_01_C__DSC05626-Edit.jpg 4096w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1707)) or
+                ((orientation: landscape) and (width >= 2560))"
+         srcset=".thumbs/jpeg/loupe_2560/thumb_2560_2021_08_01_C__DSC05626-Edit.jpg 2560w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1280)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/jpeg/loupe_1920/thumb_1920_2021_08_01_C__DSC05626-Edit.jpg 1920w">
+        <source type="image/jpeg"
+         srcset=".thumbs/jpeg/loupe_1440/thumb_1440_2021_08_01_C__DSC05626-Edit.jpg 1440w">
+        <img fetchpriority="low" style="aspect-ratio: 6000/4000;">
+    </picture>
+    <div class="nav-pads">
+        <a class="nav-pad-right" href="#photo-2" title="Next image in gallery">🡲</a>
+        <a class="nav-pad-up" href="#" title="Go back to gallery">🡱</a>
+    </div>
+    <div class="photo-exif">
+        <p>29 mm<sup><abbr title="35mm equivalent focal length">eq</abbr></sup>
+        1/125 f/9.0 ISO200</p>
+    </div>
+</div>
+<div class="loupe" id="photo-2">
+    <picture class="loupe-picture">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 4000)) or
+                ((orientation: landscape) and (width >= 6000))"
+         srcset=".thumbs/avif/loupe_orig/thumb_orig_2021_08_01_C__DSC05642.avif 6000w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 3413)) or
+                ((orientation: landscape) and (width >= 5120))"
+         srcset=".thumbs/avif/loupe_5120/thumb_5120_2021_08_01_C__DSC05642.avif 5120w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 2731)) or
+                ((orientation: landscape) and (width >= 4096))"
+         srcset=".thumbs/avif/loupe_4096/thumb_4096_2021_08_01_C__DSC05642.avif 4096w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1707)) or
+                ((orientation: landscape) and (width >= 2560))"
+         srcset=".thumbs/avif/loupe_2560/thumb_2560_2021_08_01_C__DSC05642.avif 2560w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1280)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/avif/loupe_1920/thumb_1920_2021_08_01_C__DSC05642.avif 1920w">
+        <source type="image/avif"
+         srcset=".thumbs/avif/loupe_1440/thumb_1440_2021_08_01_C__DSC05642.avif 1440w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 4000)) or
+                ((orientation: landscape) and (width >= 6000))"
+         srcset=".thumbs/jpeg/loupe_orig/thumb_orig_2021_08_01_C__DSC05642.jpg 6000w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 3413)) or
+                ((orientation: landscape) and (width >= 5120))"
+         srcset=".thumbs/jpeg/loupe_5120/thumb_5120_2021_08_01_C__DSC05642.jpg 5120w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 2731)) or
+                ((orientation: landscape) and (width >= 4096))"
+         srcset=".thumbs/jpeg/loupe_4096/thumb_4096_2021_08_01_C__DSC05642.jpg 4096w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1707)) or
+                ((orientation: landscape) and (width >= 2560))"
+         srcset=".thumbs/jpeg/loupe_2560/thumb_2560_2021_08_01_C__DSC05642.jpg 2560w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1280)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/jpeg/loupe_1920/thumb_1920_2021_08_01_C__DSC05642.jpg 1920w">
+        <source type="image/jpeg"
+         srcset=".thumbs/jpeg/loupe_1440/thumb_1440_2021_08_01_C__DSC05642.jpg 1440w">
+        <img fetchpriority="low" style="aspect-ratio: 6000/4000;">
+    </picture>
+    <div class="nav-pads">
+        <a class="nav-pad-left" href="#photo-1" title="Previous image in gallery">🡰</a>
+        <a class="nav-pad-right" href="#photo-3" title="Next image in gallery">🡲</a>
+        <a class="nav-pad-up" href="#" title="Go back to gallery">🡱</a>
+    </div>
+    <div class="photo-exif">
+        <p>240 mm<sup><abbr title="35mm equivalent focal length">eq</abbr></sup>
+        1/1000 f/8.0 ISO8000</p>
+    </div>
+</div>
+<div class="loupe" id="photo-3">
+    <picture class="loupe-picture">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 2326)) or
+                ((orientation: landscape) and (width >= 3874))"
+         srcset=".thumbs/avif/loupe_orig/thumb_orig_2021_08_01_C__DSC05657.avif 3874w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1537)) or
+                ((orientation: landscape) and (width >= 2560))"
+         srcset=".thumbs/avif/loupe_2560/thumb_2560_2021_08_01_C__DSC05657.avif 2560w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1153)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/avif/loupe_1920/thumb_1920_2021_08_01_C__DSC05657.avif 1920w">
+        <source type="image/avif"
+         srcset=".thumbs/avif/loupe_1440/thumb_1440_2021_08_01_C__DSC05657.avif 1440w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 2326)) or
+                ((orientation: landscape) and (width >= 3874))"
+         srcset=".thumbs/jpeg/loupe_orig/thumb_orig_2021_08_01_C__DSC05657.jpg 3874w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1537)) or
+                ((orientation: landscape) and (width >= 2560))"
+         srcset=".thumbs/jpeg/loupe_2560/thumb_2560_2021_08_01_C__DSC05657.jpg 2560w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1153)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/jpeg/loupe_1920/thumb_1920_2021_08_01_C__DSC05657.jpg 1920w">
+        <source type="image/jpeg"
+         srcset=".thumbs/jpeg/loupe_1440/thumb_1440_2021_08_01_C__DSC05657.jpg 1440w">
+        <img fetchpriority="low" style="aspect-ratio: 3874/2326;">
+    </picture>
+    <div class="nav-pads">
+        <a class="nav-pad-left" href="#photo-2" title="Previous image in gallery">🡰</a>
+        <a class="nav-pad-right" href="#photo-4" title="Next image in gallery">🡲</a>
+        <a class="nav-pad-up" href="#" title="Go back to gallery">🡱</a>
+    </div>
+    <div class="photo-exif">
+        <p>240 mm<sup><abbr title="35mm equivalent focal length">eq</abbr></sup>
+        1/320 f/14.0 ISO8000</p>
+    </div>
+</div>
+<div class="loupe" id="photo-4">
+    <picture class="loupe-picture">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 3442)) or
+                ((orientation: landscape) and (width >= 3837))"
+         srcset=".thumbs/avif/loupe_orig/thumb_orig_2021_08_01_C__DSC05669.avif 3837w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 2296)) or
+                ((orientation: landscape) and (width >= 2560))"
+         srcset=".thumbs/avif/loupe_2560/thumb_2560_2021_08_01_C__DSC05669.avif 2560w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1722)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/avif/loupe_1920/thumb_1920_2021_08_01_C__DSC05669.avif 1920w">
+        <source type="image/avif"
+         srcset=".thumbs/avif/loupe_1440/thumb_1440_2021_08_01_C__DSC05669.avif 1440w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 3442)) or
+                ((orientation: landscape) and (width >= 3837))"
+         srcset=".thumbs/jpeg/loupe_orig/thumb_orig_2021_08_01_C__DSC05669.jpg 3837w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 2296)) or
+                ((orientation: landscape) and (width >= 2560))"
+         srcset=".thumbs/jpeg/loupe_2560/thumb_2560_2021_08_01_C__DSC05669.jpg 2560w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1722)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/jpeg/loupe_1920/thumb_1920_2021_08_01_C__DSC05669.jpg 1920w">
+        <source type="image/jpeg"
+         srcset=".thumbs/jpeg/loupe_1440/thumb_1440_2021_08_01_C__DSC05669.jpg 1440w">
+        <img fetchpriority="low" style="aspect-ratio: 3837/3442;">
+    </picture>
+    <div class="nav-pads">
+        <a class="nav-pad-left" href="#photo-3" title="Previous image in gallery">🡰</a>
+        <a class="nav-pad-right" href="#photo-5" title="Next image in gallery">🡲</a>
+        <a class="nav-pad-up" href="#" title="Go back to gallery">🡱</a>
+    </div>
+    <div class="photo-exif">
+        <p>240 mm<sup><abbr title="35mm equivalent focal length">eq</abbr></sup>
+        1/1000 f/6.3 ISO4000</p>
+    </div>
+</div>
+<div class="loupe" id="photo-5">
+    <picture class="loupe-picture">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 3118)) or
+                ((orientation: landscape) and (width >= 4666))"
+         srcset=".thumbs/avif/loupe_orig/thumb_orig_2021_08_01_C__DSC05673.avif 4666w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 2737)) or
+                ((orientation: landscape) and (width >= 4096))"
+         srcset=".thumbs/avif/loupe_4096/thumb_4096_2021_08_01_C__DSC05673.avif 4096w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1711)) or
+                ((orientation: landscape) and (width >= 2560))"
+         srcset=".thumbs/avif/loupe_2560/thumb_2560_2021_08_01_C__DSC05673.avif 2560w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1283)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/avif/loupe_1920/thumb_1920_2021_08_01_C__DSC05673.avif 1920w">
+        <source type="image/avif"
+         srcset=".thumbs/avif/loupe_1440/thumb_1440_2021_08_01_C__DSC05673.avif 1440w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 3118)) or
+                ((orientation: landscape) and (width >= 4666))"
+         srcset=".thumbs/jpeg/loupe_orig/thumb_orig_2021_08_01_C__DSC05673.jpg 4666w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 2737)) or
+                ((orientation: landscape) and (width >= 4096))"
+         srcset=".thumbs/jpeg/loupe_4096/thumb_4096_2021_08_01_C__DSC05673.jpg 4096w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1711)) or
+                ((orientation: landscape) and (width >= 2560))"
+         srcset=".thumbs/jpeg/loupe_2560/thumb_2560_2021_08_01_C__DSC05673.jpg 2560w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1283)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/jpeg/loupe_1920/thumb_1920_2021_08_01_C__DSC05673.jpg 1920w">
+        <source type="image/jpeg"
+         srcset=".thumbs/jpeg/loupe_1440/thumb_1440_2021_08_01_C__DSC05673.jpg 1440w">
+        <img fetchpriority="low" style="aspect-ratio: 4666/3118;">
+    </picture>
+    <div class="nav-pads">
+        <a class="nav-pad-left" href="#photo-4" title="Previous image in gallery">🡰</a>
+        <a class="nav-pad-right" href="#photo-6" title="Next image in gallery">🡲</a>
+        <a class="nav-pad-up" href="#" title="Go back to gallery">🡱</a>
+    </div>
+    <div class="photo-exif">
+        <p>240 mm<sup><abbr title="35mm equivalent focal length">eq</abbr></sup>
+        1/1000 f/6.3 ISO3200</p>
+    </div>
+</div>
+<div class="loupe" id="photo-6">
+    <picture class="loupe-picture">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 2850)) or
+                ((orientation: landscape) and (width >= 4500))"
+         srcset=".thumbs/avif/loupe_orig/thumb_orig_2021_08_01_C__DSC05677.avif 4500w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 2594)) or
+                ((orientation: landscape) and (width >= 4096))"
+         srcset=".thumbs/avif/loupe_4096/thumb_4096_2021_08_01_C__DSC05677.avif 4096w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1621)) or
+                ((orientation: landscape) and (width >= 2560))"
+         srcset=".thumbs/avif/loupe_2560/thumb_2560_2021_08_01_C__DSC05677.avif 2560w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1216)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/avif/loupe_1920/thumb_1920_2021_08_01_C__DSC05677.avif 1920w">
+        <source type="image/avif"
+         srcset=".thumbs/avif/loupe_1440/thumb_1440_2021_08_01_C__DSC05677.avif 1440w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 2850)) or
+                ((orientation: landscape) and (width >= 4500))"
+         srcset=".thumbs/jpeg/loupe_orig/thumb_orig_2021_08_01_C__DSC05677.jpg 4500w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 2594)) or
+                ((orientation: landscape) and (width >= 4096))"
+         srcset=".thumbs/jpeg/loupe_4096/thumb_4096_2021_08_01_C__DSC05677.jpg 4096w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1621)) or
+                ((orientation: landscape) and (width >= 2560))"
+         srcset=".thumbs/jpeg/loupe_2560/thumb_2560_2021_08_01_C__DSC05677.jpg 2560w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1216)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/jpeg/loupe_1920/thumb_1920_2021_08_01_C__DSC05677.jpg 1920w">
+        <source type="image/jpeg"
+         srcset=".thumbs/jpeg/loupe_1440/thumb_1440_2021_08_01_C__DSC05677.jpg 1440w">
+        <img fetchpriority="low" style="aspect-ratio: 4500/2850;">
+    </picture>
+    <div class="nav-pads">
+        <a class="nav-pad-left" href="#photo-5" title="Previous image in gallery">🡰</a>
+        <a class="nav-pad-right" href="#photo-7" title="Next image in gallery">🡲</a>
+        <a class="nav-pad-up" href="#" title="Go back to gallery">🡱</a>
+    </div>
+    <div class="photo-exif">
+        <p>240 mm<sup><abbr title="35mm equivalent focal length">eq</abbr></sup>
+        1/1000 f/6.3 ISO3200</p>
+    </div>
+</div>
+<div class="loupe" id="photo-7">
+    <picture class="loupe-picture">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 2764)) or
+                ((orientation: landscape) and (width >= 4078))"
+         srcset=".thumbs/avif/loupe_orig/thumb_orig_2021_08_01_C__DSC05683.avif 4078w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1735)) or
+                ((orientation: landscape) and (width >= 2560))"
+         srcset=".thumbs/avif/loupe_2560/thumb_2560_2021_08_01_C__DSC05683.avif 2560w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1301)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/avif/loupe_1920/thumb_1920_2021_08_01_C__DSC05683.avif 1920w">
+        <source type="image/avif"
+         srcset=".thumbs/avif/loupe_1440/thumb_1440_2021_08_01_C__DSC05683.avif 1440w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 2764)) or
+                ((orientation: landscape) and (width >= 4078))"
+         srcset=".thumbs/jpeg/loupe_orig/thumb_orig_2021_08_01_C__DSC05683.jpg 4078w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1735)) or
+                ((orientation: landscape) and (width >= 2560))"
+         srcset=".thumbs/jpeg/loupe_2560/thumb_2560_2021_08_01_C__DSC05683.jpg 2560w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1301)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/jpeg/loupe_1920/thumb_1920_2021_08_01_C__DSC05683.jpg 1920w">
+        <source type="image/jpeg"
+         srcset=".thumbs/jpeg/loupe_1440/thumb_1440_2021_08_01_C__DSC05683.jpg 1440w">
+        <img fetchpriority="low" style="aspect-ratio: 4078/2764;">
+    </picture>
+    <div class="nav-pads">
+        <a class="nav-pad-left" href="#photo-6" title="Previous image in gallery">🡰</a>
+        <a class="nav-pad-right" href="#photo-8" title="Next image in gallery">🡲</a>
+        <a class="nav-pad-up" href="#" title="Go back to gallery">🡱</a>
+    </div>
+    <div class="photo-exif">
+        <p>240 mm<sup><abbr title="35mm equivalent focal length">eq</abbr></sup>
+        1/1000 f/6.3 ISO3200</p>
+    </div>
+</div>
+<div class="loupe" id="photo-8">
+    <picture class="loupe-picture">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 3103)) or
+                ((orientation: landscape) and (width >= 4538))"
+         srcset=".thumbs/avif/loupe_orig/thumb_orig_2021_08_01_C__DSC05684.avif 4538w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 2801)) or
+                ((orientation: landscape) and (width >= 4096))"
+         srcset=".thumbs/avif/loupe_4096/thumb_4096_2021_08_01_C__DSC05684.avif 4096w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1750)) or
+                ((orientation: landscape) and (width >= 2560))"
+         srcset=".thumbs/avif/loupe_2560/thumb_2560_2021_08_01_C__DSC05684.avif 2560w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1313)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/avif/loupe_1920/thumb_1920_2021_08_01_C__DSC05684.avif 1920w">
+        <source type="image/avif"
+         srcset=".thumbs/avif/loupe_1440/thumb_1440_2021_08_01_C__DSC05684.avif 1440w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 3103)) or
+                ((orientation: landscape) and (width >= 4538))"
+         srcset=".thumbs/jpeg/loupe_orig/thumb_orig_2021_08_01_C__DSC05684.jpg 4538w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 2801)) or
+                ((orientation: landscape) and (width >= 4096))"
+         srcset=".thumbs/jpeg/loupe_4096/thumb_4096_2021_08_01_C__DSC05684.jpg 4096w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1750)) or
+                ((orientation: landscape) and (width >= 2560))"
+         srcset=".thumbs/jpeg/loupe_2560/thumb_2560_2021_08_01_C__DSC05684.jpg 2560w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1313)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/jpeg/loupe_1920/thumb_1920_2021_08_01_C__DSC05684.jpg 1920w">
+        <source type="image/jpeg"
+         srcset=".thumbs/jpeg/loupe_1440/thumb_1440_2021_08_01_C__DSC05684.jpg 1440w">
+        <img fetchpriority="low" style="aspect-ratio: 4538/3103;">
+    </picture>
+    <div class="nav-pads">
+        <a class="nav-pad-left" href="#photo-7" title="Previous image in gallery">🡰</a>
+        <a class="nav-pad-right" href="#photo-9" title="Next image in gallery">🡲</a>
+        <a class="nav-pad-up" href="#" title="Go back to gallery">🡱</a>
+    </div>
+    <div class="photo-exif">
+        <p>240 mm<sup><abbr title="35mm equivalent focal length">eq</abbr></sup>
+        1/1000 f/6.3 ISO3200</p>
+    </div>
+</div>
+<div class="loupe" id="photo-9">
+    <picture class="loupe-picture">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 4000)) or
+                ((orientation: landscape) and (width >= 6000))"
+         srcset=".thumbs/avif/loupe_orig/thumb_orig_2021_08_01_C__DSC05691.avif 6000w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 3413)) or
+                ((orientation: landscape) and (width >= 5120))"
+         srcset=".thumbs/avif/loupe_5120/thumb_5120_2021_08_01_C__DSC05691.avif 5120w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 2731)) or
+                ((orientation: landscape) and (width >= 4096))"
+         srcset=".thumbs/avif/loupe_4096/thumb_4096_2021_08_01_C__DSC05691.avif 4096w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1707)) or
+                ((orientation: landscape) and (width >= 2560))"
+         srcset=".thumbs/avif/loupe_2560/thumb_2560_2021_08_01_C__DSC05691.avif 2560w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1280)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/avif/loupe_1920/thumb_1920_2021_08_01_C__DSC05691.avif 1920w">
+        <source type="image/avif"
+         srcset=".thumbs/avif/loupe_1440/thumb_1440_2021_08_01_C__DSC05691.avif 1440w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 4000)) or
+                ((orientation: landscape) and (width >= 6000))"
+         srcset=".thumbs/jpeg/loupe_orig/thumb_orig_2021_08_01_C__DSC05691.jpg 6000w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 3413)) or
+                ((orientation: landscape) and (width >= 5120))"
+         srcset=".thumbs/jpeg/loupe_5120/thumb_5120_2021_08_01_C__DSC05691.jpg 5120w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 2731)) or
+                ((orientation: landscape) and (width >= 4096))"
+         srcset=".thumbs/jpeg/loupe_4096/thumb_4096_2021_08_01_C__DSC05691.jpg 4096w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1707)) or
+                ((orientation: landscape) and (width >= 2560))"
+         srcset=".thumbs/jpeg/loupe_2560/thumb_2560_2021_08_01_C__DSC05691.jpg 2560w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1280)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/jpeg/loupe_1920/thumb_1920_2021_08_01_C__DSC05691.jpg 1920w">
+        <source type="image/jpeg"
+         srcset=".thumbs/jpeg/loupe_1440/thumb_1440_2021_08_01_C__DSC05691.jpg 1440w">
+        <img fetchpriority="low" style="aspect-ratio: 6000/4000;">
+    </picture>
+    <div class="nav-pads">
+        <a class="nav-pad-left" href="#photo-8" title="Previous image in gallery">🡰</a>
+        <a class="nav-pad-right" href="#photo-10" title="Next image in gallery">🡲</a>
+        <a class="nav-pad-up" href="#" title="Go back to gallery">🡱</a>
+    </div>
+    <div class="photo-exif">
+        <p>240 mm<sup><abbr title="35mm equivalent focal length">eq</abbr></sup>
+        1/1000 f/6.3 ISO5000</p>
+    </div>
+</div>
+<div class="loupe" id="photo-10">
+    <picture class="loupe-picture">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 2786)) or
+                ((orientation: landscape) and (width >= 3731))"
+         srcset=".thumbs/avif/loupe_orig/thumb_orig_2021_08_01_C__DSC05693.avif 3731w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1912)) or
+                ((orientation: landscape) and (width >= 2560))"
+         srcset=".thumbs/avif/loupe_2560/thumb_2560_2021_08_01_C__DSC05693.avif 2560w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1434)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/avif/loupe_1920/thumb_1920_2021_08_01_C__DSC05693.avif 1920w">
+        <source type="image/avif"
+         srcset=".thumbs/avif/loupe_1440/thumb_1440_2021_08_01_C__DSC05693.avif 1440w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 2786)) or
+                ((orientation: landscape) and (width >= 3731))"
+         srcset=".thumbs/jpeg/loupe_orig/thumb_orig_2021_08_01_C__DSC05693.jpg 3731w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1912)) or
+                ((orientation: landscape) and (width >= 2560))"
+         srcset=".thumbs/jpeg/loupe_2560/thumb_2560_2021_08_01_C__DSC05693.jpg 2560w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1434)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/jpeg/loupe_1920/thumb_1920_2021_08_01_C__DSC05693.jpg 1920w">
+        <source type="image/jpeg"
+         srcset=".thumbs/jpeg/loupe_1440/thumb_1440_2021_08_01_C__DSC05693.jpg 1440w">
+        <img fetchpriority="low" style="aspect-ratio: 3731/2786;">
+    </picture>
+    <div class="nav-pads">
+        <a class="nav-pad-left" href="#photo-9" title="Previous image in gallery">🡰</a>
+        <a class="nav-pad-right" href="#photo-11" title="Next image in gallery">🡲</a>
+        <a class="nav-pad-up" href="#" title="Go back to gallery">🡱</a>
+    </div>
+    <div class="photo-exif">
+        <p>240 mm<sup><abbr title="35mm equivalent focal length">eq</abbr></sup>
+        1/1000 f/6.3 ISO4000</p>
+    </div>
+</div>
+<div class="loupe" id="photo-11">
+    <picture class="loupe-picture">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 2801)) or
+                ((orientation: landscape) and (width >= 4055))"
+         srcset=".thumbs/avif/loupe_orig/thumb_orig_2021_08_01_C__DSC05694-Edit.avif 4055w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1768)) or
+                ((orientation: landscape) and (width >= 2560))"
+         srcset=".thumbs/avif/loupe_2560/thumb_2560_2021_08_01_C__DSC05694-Edit.avif 2560w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1326)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/avif/loupe_1920/thumb_1920_2021_08_01_C__DSC05694-Edit.avif 1920w">
+        <source type="image/avif"
+         srcset=".thumbs/avif/loupe_1440/thumb_1440_2021_08_01_C__DSC05694-Edit.avif 1440w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 2801)) or
+                ((orientation: landscape) and (width >= 4055))"
+         srcset=".thumbs/jpeg/loupe_orig/thumb_orig_2021_08_01_C__DSC05694-Edit.jpg 4055w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1768)) or
+                ((orientation: landscape) and (width >= 2560))"
+         srcset=".thumbs/jpeg/loupe_2560/thumb_2560_2021_08_01_C__DSC05694-Edit.jpg 2560w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1326)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/jpeg/loupe_1920/thumb_1920_2021_08_01_C__DSC05694-Edit.jpg 1920w">
+        <source type="image/jpeg"
+         srcset=".thumbs/jpeg/loupe_1440/thumb_1440_2021_08_01_C__DSC05694-Edit.jpg 1440w">
+        <img fetchpriority="low" style="aspect-ratio: 4055/2801;">
+    </picture>
+    <div class="nav-pads">
+        <a class="nav-pad-left" href="#photo-10" title="Previous image in gallery">🡰</a>
+        <a class="nav-pad-right" href="#photo-12" title="Next image in gallery">🡲</a>
+        <a class="nav-pad-up" href="#" title="Go back to gallery">🡱</a>
+    </div>
+    <div class="photo-exif">
+        <p>24 mm<sup><abbr title="35mm equivalent focal length">eq</abbr></sup>
+        1/640 f/6.3 ISO100</p>
+    </div>
+</div>
+<div class="loupe" id="photo-12">
+    <picture class="loupe-picture">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1703)) or
+                ((orientation: landscape) and (width >= 2554))"
+         srcset=".thumbs/avif/loupe_orig/thumb_orig_2021_08_01_C__DSC05700.avif 2554w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1280)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/avif/loupe_1920/thumb_1920_2021_08_01_C__DSC05700.avif 1920w">
+        <source type="image/avif"
+         srcset=".thumbs/avif/loupe_1440/thumb_1440_2021_08_01_C__DSC05700.avif 1440w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1703)) or
+                ((orientation: landscape) and (width >= 2554))"
+         srcset=".thumbs/jpeg/loupe_orig/thumb_orig_2021_08_01_C__DSC05700.jpg 2554w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1280)) or
+                ((orientation: landscape) and (width >= 1920))"
+         srcset=".thumbs/jpeg/loupe_1920/thumb_1920_2021_08_01_C__DSC05700.jpg 1920w">
+        <source type="image/jpeg"
+         srcset=".thumbs/jpeg/loupe_1440/thumb_1440_2021_08_01_C__DSC05700.jpg 1440w">
+        <img fetchpriority="low" style="aspect-ratio: 2554/1703;">
+    </picture>
+    <div class="nav-pads">
+        <a class="nav-pad-left" href="#photo-11" title="Previous image in gallery">🡰</a>
+        <a class="nav-pad-right" href="#photo-13" title="Next image in gallery">🡲</a>
+        <a class="nav-pad-up" href="#" title="Go back to gallery">🡱</a>
+    </div>
+    <div class="photo-exif">
+        <p>240 mm<sup><abbr title="35mm equivalent focal length">eq</abbr></sup>
+        1/1000 f/6.3 ISO125</p>
+    </div>
+</div>
+<div class="loupe" id="photo-13">
+    <picture class="loupe-picture">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 6000)) or
+                ((orientation: landscape) and (width >= 3491))"
+         srcset=".thumbs/avif/loupe_orig/thumb_orig_2021_08_01_C__DSC05703.avif 3491w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 5120)) or
+                ((orientation: landscape) and (width >= 2979))"
+         srcset=".thumbs/avif/loupe_5120/thumb_5120_2021_08_01_C__DSC05703.avif 2979w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 4096)) or
+                ((orientation: landscape) and (width >= 2383))"
+         srcset=".thumbs/avif/loupe_4096/thumb_4096_2021_08_01_C__DSC05703.avif 2383w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 2560)) or
+                ((orientation: landscape) and (width >= 1489))"
+         srcset=".thumbs/avif/loupe_2560/thumb_2560_2021_08_01_C__DSC05703.avif 1489w">
+        <source type="image/avif"
+         media="((orientation: portrait) and (height >= 1920)) or
+                ((orientation: landscape) and (width >= 1117))"
+         srcset=".thumbs/avif/loupe_1920/thumb_1920_2021_08_01_C__DSC05703.avif 1117w">
+        <source type="image/avif"
+         srcset=".thumbs/avif/loupe_1440/thumb_1440_2021_08_01_C__DSC05703.avif 838w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 6000)) or
+                ((orientation: landscape) and (width >= 3491))"
+         srcset=".thumbs/jpeg/loupe_orig/thumb_orig_2021_08_01_C__DSC05703.jpg 3491w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 5120)) or
+                ((orientation: landscape) and (width >= 2979))"
+         srcset=".thumbs/jpeg/loupe_5120/thumb_5120_2021_08_01_C__DSC05703.jpg 2979w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 4096)) or
+                ((orientation: landscape) and (width >= 2383))"
+         srcset=".thumbs/jpeg/loupe_4096/thumb_4096_2021_08_01_C__DSC05703.jpg 2383w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 2560)) or
+                ((orientation: landscape) and (width >= 1489))"
+         srcset=".thumbs/jpeg/loupe_2560/thumb_2560_2021_08_01_C__DSC05703.jpg 1489w">
+        <source type="image/jpeg"
+         media="((orientation: portrait) and (height >= 1920)) or
+                ((orientation: landscape) and (width >= 1117))"
+         srcset=".thumbs/jpeg/loupe_1920/thumb_1920_2021_08_01_C__DSC05703.jpg 1117w">
+        <source type="image/jpeg"
+         srcset=".thumbs/jpeg/loupe_1440/thumb_1440_2021_08_01_C__DSC05703.jpg 838w">
+        <img fetchpriority="low" style="aspect-ratio: 3491/6000;">
+    </picture>
+    <div class="nav-pads">
+        <a class="nav-pad-left" href="#photo-12" title="Previous image in gallery">🡰</a>
+        <a class="nav-pad-up" href="#" title="Go back to gallery">🡱</a>
+    </div>
+    <div class="photo-exif">
+        <p>62 mm<sup><abbr title="35mm equivalent focal length">eq</abbr></sup>
+        1/320 f/6.3 ISO100</p>
+    </div>
+</div>
+<script>
+window.addEventListener("keydown", function keyDown(ev) {
+    const padName = {
+        "ArrowLeft": "left",
+        "PageUp": "left",
+        "ArrowRight": "right",
+        "PageDown": "right",
+        "Escape": "up",
+        "Backspace": "up",
+        "ArrowUp": "up",
+    }[ev.key];
+    if (!padName)
+        return;
+    const pad = document.querySelector(`.loupe:target .nav-pad-${padName}`);
+    if (!pad)
+        return; // not in loupe
+    ev.preventDefault();
+    pad.click();
+});
+</script>
+</body>
+</html>

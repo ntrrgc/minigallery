@@ -68,4 +68,26 @@ Later, Firefox disabled the old scheme:
 * Jul 24 2024, it had to be re-enabled [due to some websites not working](https://bugzilla.mozilla.org/show_bug.cgi?id=1909666): [Bug 1909666 - Re-enable network.http.http2.enabled.deps and not send SETTINGS_NO_RFC7540_PRIORITIES, r=#necko](https://phabricator.services.mozilla.com/D217584)
 * Sep 13 2024, it was disabled again, after ostensibly more testing: [Bug 1915134 - Flip network.http.http2.enabled.deps to false r=acreskey](https://phabricator.services.mozilla.com/D220390)
 
-As of Jul 13 204, it is still disabled by default.
+As of Jul 13 2025, it is still disabled by default.
+
+# Testing
+
+The following tests were done with `tc qdisc replace dev eth0 root netem delay 150ms rate 256kbit`.
+
+## Apache, Firefox with enabled.deps=false (default)
+
+Prioritization is **broken**: the contact sheet is loaded way too late.
+
+However, since Apache does not seem to implement EPS and with this setting Firefox does not provide a priority tree, this is not too surprising.
+
+## Apache, Firefox with enabled.deps=true
+
+Prioritization is **broken**: the contact sheet is loaded way too late. Firefox seems to rely on weights for prioritization, but Apache may not be taking them into account.
+
+https://share.firefox.dev/4eKB7mS
+
+Raw data in `evidences/apache_firefox_enabled_deps_true`.
+
+## Apache, Chrome
+
+**Prioritization seems to work**. However, given that it always seems to request the most important resource first, I'm not confident that it's not just working by accident.

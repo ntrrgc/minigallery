@@ -50,7 +50,7 @@ def save_opts_jpeg(side: int, kind: ImageKind) -> dict[str, Any]:
 def save_opts_default(side: int, kind: ImageKind) -> dict[str, Any]:
     return {}
 
-IMAGE_FORMATS = (
+IMAGE_FORMATS_LOUPE = (
     ImageFormat(
         name="avif",
         extension="avif",
@@ -68,6 +68,14 @@ IMAGE_FORMATS = (
     #     save_opts_fn=save_opts_default,
     # ),
 )
+# Having progressive image support is more important than better compression.
+IMAGE_FORMATS_CONTACTS = [
+    ImageFormat(
+        name="jpeg",
+        extension="jpg",
+        save_opts_fn=save_opts_jpeg,
+    ),
+]
 SUPPORTED_SRC_EXTENSIONS = {".jpg", ".jpeg", ".png", ".tif", ".tiff", ".bmp",
     ".jxl", ".webp", ".heic", ".avif", ".jp2", ".jpx", ".jpf", ".jpg2"}
 THUMBS_DIR = ".thumbs"
@@ -82,7 +90,7 @@ class Config:
     and overflow into multiple lines without varying vertical gaps.
     """
 
-    contact_thumb_dpr: Sequence[int] = (1, 2, 3)
+    contact_thumb_dpr: Sequence[int] = (2, )
     """
     How many versions of the thumbnails for different Device Pixel Ratios.
     At DPR of 2, thumnails will be generated for 2 times the logical height of
@@ -293,7 +301,7 @@ def render_contact_sheet(photos: Sequence[Path | str],
 
     url_by_format: DictByFormat[str] = {}
     with PIL.Image.fromarray(px) as sheet:
-        for format in IMAGE_FORMATS:
+        for format in IMAGE_FORMATS_LOUPE:
             opts = format.save_opts_fn(max(sheet.size), "contacts")
             contacts_path = Path(out_dir/THUMBS_DIR/f'contacts_dpr{dpr}.{format.extension}')
             sheet.save(contacts_path, **opts)
@@ -346,10 +354,10 @@ def render_loupe_thumbs(photo_paths: Iterable[Path], desired_sizes: Sequence[int
         with image_open(src_path) as src_im:
             thumbs_by_format: DictByFormat[list[URLWithSize]] = {
                 format.name: []
-                for format in IMAGE_FORMATS
+                for format in IMAGE_FORMATS_LOUPE
             }
             for size_name, thumb in gen_loupe_thumbs(src_im, desired_sizes):
-                for format in IMAGE_FORMATS:
+                for format in IMAGE_FORMATS_LOUPE:
                     thumb_path = Path(out_dir/THUMBS_DIR/format.name/f'loupe_{size_name}'/
                         f'thumb_{size_name}_{src_path.stem}.{format.extension}')
                     thumb_path.parent.mkdir(exist_ok=True, parents=True)
