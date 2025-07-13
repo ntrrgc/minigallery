@@ -13,7 +13,7 @@ if [[ ! -f sslkey.log ]]; then
   chown "$uid:$gid" sslkey.log
 fi
 
-"$engine" build . --tag slow-server
+"$engine" build -f apache.Dockerfile . --tag slow-server
 "$engine" rm -f slow-server || : 2>/dev/null
 "$engine" create \
   -v ..:/usr/local/apache2/htdocs/:ro \

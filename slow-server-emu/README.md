@@ -1,6 +1,6 @@
 # Slow network server emulation
 
-This directory contains a container image with Apache set up to serve the root directory of this project. TLS and HTTP2 are enabled.
+This directory contains a container image with Apache or lighttpd, set up to serve the root directory of this project. TLS and HTTP2 are enabled.
 
 **Both docker and podman are supported and function equivalently**.
 
@@ -32,12 +32,12 @@ $ mkcert -install  # run as a regular user
 
 ## Create the image:
 ## This will also start the container and update /etc/hosts so that "slow-server" points to the container IP.
-$ sudo env ENGINE=docker ./create.sh
+$ sudo env ENGINE=docker ./create_apache.sh
 ## This should work. If you didn't install the local CA, you can pass --insecure
 $ curl -v --http2 https://slow-server/
 ```
 
-`./create.sh` can be re-run at any time, in which case the older container is deleted and replaced with a new one.
+`./create_apache.sh` can be re-run at any time, in which case the older container is deleted and replaced with a new one.
 
 Alternatively, you can start the server without recreating the container with `sudo ./start.sh`.
 
@@ -107,6 +107,8 @@ You want to make sure the dark green area of `contacts_` precedes the dark green
 ## Wireshark traffic capture
 
 The container is already set up to run httpd with SSLKEYLOG, which is mapped to `sslkey.log` in this directory, and automatically created.
+
+**Note:** This doesn't work for the lighttpd image. [AFAIK lighttpd doesn't support `SSLKEYLOGFILE`](https://serverfault.com/q/875708).
 
 Open Wireshark, Edit/Preferences, Protocols/TLS. In "(Pre)-Master-Secret log filename" set the path to the `sslkey.log` file.
 
