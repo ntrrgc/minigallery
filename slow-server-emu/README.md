@@ -90,6 +90,8 @@ In the Console tab, input `document.body.innerHTML=""` to clear the page. This i
 
 In the Network tab, click "Disable cache". Make sure have "No throttling" set. Do all throttling with `tc` in the container instead.
 
+**Caveat:** "Disable cache" does not seem to work entirely in Firefox. Notably, the contact sheet (which uses `background-image` and `rel=preload`) will sometimes be loaded from cache even with that checkbox ticked. As a workaround I've started using a different Firefox instance and clearing cache every time.
+
 In the Performance tab, click "Start recording". Then press Ctrl+R to reload the page. Once the page finishes loading, press "Capture recording".
 
 Firefox Profiler opens. Click on the "Network" track to get a waterfall chart.
