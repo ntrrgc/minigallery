@@ -1,6 +1,8 @@
 # Slow network server emulation
 
-This directory contains a docker image with Apache set up to serve the root directory of this project. TLS and HTTP2 are enabled.
+This directory contains a container image with Apache set up to serve the root directory of this project. TLS and HTTP2 are enabled.
+
+**Both docker and podman are supported and function equivalently**.
 
 The container is meant to run rootful, so that it gets its own network interface with its own IP address you can connect to from the host.
 
