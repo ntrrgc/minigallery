@@ -6,6 +6,14 @@ The container is meant to run rootful, so that it gets its own network interface
 
 Once that is working, you can use `tc` inside the container to simulate slow networks. Traffic to general Internet or other networks is not affected.
 
+## Why this is needed
+
+DevTools in both Firefox and Chrome have slow network emulation, but **it's extremely inaccurate for testing content prioritization**: the browsers will still download as fast as they can, usually getting an entire stream served before the next one is requested.
+
+Furthermore, the DevTools then fake the timing of the responses making it look like most of them were served concurrently even though they weren't and even if the server would have never done that.
+
+As a consequence, you can get a (totally fabricated) timing of 45 seconds with DevTools network emulation when the same throttling with proper network shaping would have resulted in 5 seconds load time.
+
 ## Usage
 
 To create the container:
