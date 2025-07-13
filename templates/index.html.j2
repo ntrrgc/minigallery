@@ -3,6 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+{# Issue: doesn't cover multiple formats. https://github.com/w3c/preload/issues/28 #}
+{# Issue: doesn't actually work well with DPR > 1. #}
+<link rel="preload" as="image" fetchpriority="high" imagesrcset="
+{%- for sheet in album.contact_sheets -%}
+{{ sheet.url_by_format.avif | urlencode }} {{ sheet.dpr }}x
+{%- if not loop.last %}, {% endif %}
+{%- endfor %}" type="image/avif">
 <link rel="shortcut icon" href="data:," />
 <title>{{ album.name }}</title>
 <style>
@@ -140,7 +147,7 @@ body:has(.loupe:target) #contact-sheet {
          srcset="{{ thumb.url|urlencode }} {{ thumb.w }}w">
         {% endfor %}
         {% endfor %}
-        <img style="aspect-ratio: {{photo.orig_width}}/{{photo.orig_height}};">
+        <img fetchpriority="low" style="aspect-ratio: {{photo.orig_width}}/{{photo.orig_height}};">
     </picture>
     <div class="nav-pads">
         {% if not loop.first %}
