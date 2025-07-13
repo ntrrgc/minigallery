@@ -1,0 +1,1 @@
+Small experiment to make a simple static photo gallery generator.
