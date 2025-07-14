@@ -91,3 +91,9 @@ Raw data in `evidences/apache_firefox_enabled_deps_true`.
 ## Apache, Chrome
 
 **Prioritization seems to work**. However, given that it always seems to request the most important resource first, I'm not confident that it's not just working by accident.
+
+## lighttpd
+
+Prioritization is **probably broken**: lighttpd seems to alternate between streams waaay too much.
+
+In practice the effect is mitigated thanks to JPEG progressive decoding.
