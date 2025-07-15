@@ -3,11 +3,6 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="preload" as="image" fetchpriority="high" imagesrcset="
-{%- for sheet in album.contact_sheets -%}
-{{ sheet.url_by_format.jpeg | urlencode }} {{ sheet.dpr }}x
-{%- if not loop.last %}, {% endif %}
-{%- endfor %}" type="image/jpeg">
 <link rel="shortcut icon" href="data:," />
 <title>{{ album.name }}</title>
 <style>
@@ -150,7 +145,7 @@ body:has(.loupe:target) #contact-sheet {
                  {%- if not loop.last %}, {% endif -%}
                  {%- endfor %}">
         {% endfor %}
-        <img fetchpriority="low" style="aspect-ratio: {{photo.orig_width}}/{{photo.orig_height}};">
+        <img fetchpriority="low" loading="lazy" style="aspect-ratio: {{photo.orig_width}}/{{photo.orig_height}};">
     </picture>
     <div class="nav-pads">
         {% if not loop.first %}
@@ -186,6 +181,19 @@ window.addEventListener("keydown", function keyDown(ev) {
         return; // not in loupe
     ev.preventDefault();
     pad.click();
+});
+// JS-based tight mode, because HTTP2-3 servers cannot be trusted to respect
+// priorities, and browsers cannot be trusted to request the correct priorities:
+window.addEventListener("load", function onLoad() {
+    // As of Jul 15 2025 this assumption seems to work on Firefox 140,
+    // WebKit 60.5 and Chromium 138.
+    // If a browser breaks this assumption AND {the browser doesn't request the
+    // correct priorities OR the server prioritizes wrong}, the page will still
+    // load, but the contact sheet thumbnails will load significantly slower.
+    console.log("Page loaded, asuming contacts are loaded. Loading loupe thumbnails.")
+    for (const img of document.querySelectorAll("img")) {
+        img.loading = "eager";
+    }
 });
 </script>
 </body>
