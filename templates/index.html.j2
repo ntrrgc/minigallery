@@ -3,8 +3,6 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-{# Issue: doesn't cover multiple formats. https://github.com/w3c/preload/issues/28 #}
-{# Issue: doesn't actually work well with DPR > 1. #}
 <link rel="preload" as="image" fetchpriority="high" imagesrcset="
 {%- for sheet in album.contact_sheets -%}
 {{ sheet.url_by_format.jpeg | urlencode }} {{ sheet.dpr }}x
@@ -16,22 +14,16 @@
 *, *:before, *:after {
     box-sizing: border-box;
 }
-{% for sheet in album.contact_sheets %}
-{% if not loop.first %}
-@media (min-resolution: {{sheet.dpr}}x) {
-{% endif %}
-    .contact {
-        background-image: image-set(
-            {% for format, url in sheet.url_by_format|items %}
-            "{{ url | urlencode}}" type("image/{{ format }}")
-            {%- if not loop.last %}, {% endif +%}
-            {% endfor %}
-        );
-    }
-{% if not loop.first %}
+.contact {
+    background-image: image-set(
+        {% for sheet in album.contact_sheets %}
+        {% for format, url in sheet.url_by_format|items %}
+        "{{ url | urlencode}}" {{ sheet.dpr }}x type("image/{{ format }}")
+        {%- if not loop.last %}, {% endif +%}
+        {% endfor %}
+        {% endfor %}
+    );
 }
-{% endif %}
-{%- endfor %}
 #contact-sheet {
     display: flex;
     flex-flow: row wrap;
@@ -137,16 +129,26 @@ body:has(.loupe:target) #contact-sheet {
 {% for photo in album.photos %}
 <div class="loupe" id="photo-{{ loop.index }}">
     <picture class="loupe-picture">
+        {#
+        Let the browser pick a thumbnail. Tested with Firefox and Chrome.
+        Advantages:
+        * Correct handling of DPR.
+        * Will not blank the image on resize.
+        * In theory, the browser can make smart decisions, like limiting
+          resolution on data saver modes.
+        Disadvantages:
+        * In the event of a resize, both Firefox and Chrome will start downloading
+          a smaller size image after already having downloaded a still suitable
+          larger resolution image. This is the opposite of a smart decision.
+        * Will not preload an image large enough for full screen.
+        * Will not preload an image large enough to account for screen rotation.
+        #}
         {% for format, thumbs in photo.loupe_thumbs|items %}
-        {% for thumb in thumbs|reverse %}
         <source type="image/{{format}}"
-         {# BUG: These pixels are device-independent. I have not found yet a way to make a media query use device pixels. #}
-         {% if not loop.last %}
-         media="((orientation: portrait) and (height >= {{ thumb.h }}px)) or
-                ((orientation: landscape) and (width >= {{ thumb.w }}px))"
-         {% endif %}
-         srcset="{{ thumb.url|urlencode }} {{ thumb.w }}w">
-        {% endfor %}
+         srcset="{% for thumb in thumbs|reverse -%}
+                 {{ thumb.url|urlencode }} {{ thumb.w }}w
+                 {%- if not loop.last %}, {% endif -%}
+                 {%- endfor %}">
         {% endfor %}
         <img fetchpriority="low" style="aspect-ratio: {{photo.orig_width}}/{{photo.orig_height}};">
     </picture>
