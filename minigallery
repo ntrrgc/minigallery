@@ -435,5 +435,5 @@ def render_html(out_dir: Path):
         f.write(html)
 
 # shutil.rmtree(Path("out"), ignore_errors=True)
-# gen_gallery(Config(), Path(Path(__file__).parent/"test-albums/2021-08-01 Orsted Park"), Path("out"))
+# gen_gallery(Config(), Path(Path(__file__).parent/"test-albums/2025-07-14 Evening"), Path("out"))
 render_html(Path("out"))
