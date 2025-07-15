@@ -301,7 +301,7 @@ def render_contact_sheet(photos: Sequence[Path | str],
 
     url_by_format: DictByFormat[str] = {}
     with PIL.Image.fromarray(px) as sheet:
-        for format in IMAGE_FORMATS_LOUPE:
+        for format in IMAGE_FORMATS_CONTACTS:
             opts = format.save_opts_fn(max(sheet.size), "contacts")
             contacts_path = Path(out_dir/THUMBS_DIR/f'contacts_dpr{dpr}.{format.extension}')
             sheet.save(contacts_path, **opts)
