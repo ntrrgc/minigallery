@@ -140,9 +140,10 @@ body:has(.loupe:target) #contact-sheet {
         {% for format, thumbs in photo.loupe_thumbs|items %}
         {% for thumb in thumbs|reverse %}
         <source type="image/{{format}}"
+         {# BUG: These pixels are device-independent. I have not found yet a way to make a media query use device pixels. #}
          {% if not loop.last %}
-         media="((orientation: portrait) and (height >= {{ thumb.h }})) or
-                ((orientation: landscape) and (width >= {{ thumb.w }}))"
+         media="((orientation: portrait) and (height >= {{ thumb.h }}px)) or
+                ((orientation: landscape) and (width >= {{ thumb.w }}px))"
          {% endif %}
          srcset="{{ thumb.url|urlencode }} {{ thumb.w }}w">
         {% endfor %}
