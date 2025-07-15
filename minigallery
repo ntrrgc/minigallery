@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 from __future__ import annotations
+from argparse import ArgumentParser
 from collections.abc import Sequence
 from itertools import chain
+import sys
 import json
 import shutil
 import subprocess
@@ -434,6 +436,39 @@ def render_html(out_dir: Path):
     with open(out_dir/"index.html", "w") as f:
         f.write(html)
 
-# shutil.rmtree(Path("out"), ignore_errors=True)
-# gen_gallery(Config(), Path(Path(__file__).parent/"test-albums/2025-07-14 Evening"), Path("out"))
-render_html(Path("out"))
+def main():
+    parser = ArgumentParser(description="Generate a static HTML photo gallery for a single album")
+    subparsers = parser.add_subparsers(required=True)
+
+    parser_generate = subparsers.add_parser("generate", description="Generate a new static HTML photo gallery")
+    parser_generate.add_argument("src_dir", type=Path, help="Input directory with your image files")
+    parser_generate.add_argument("out_dir", type=Path, help="Directory that will be filled with your HTML photo gallery")
+    parser_generate.add_argument("--delete", help="Delete the destination directory if it already exists before re-generating.")
+    parser_generate.set_defaults(main=main_generate)
+
+    parser_update = subparsers.add_parser("update", description="Update an existing HTML photo gallery without recompressing images. Used for development-only.")
+    parser_update.add_argument("out_dir", type=Path, help="Directory that will be filled with your HTML photo gallery")
+    parser_update.set_defaults(main=main_update)
+
+    args = parser.parse_args()
+    sub_main = args.main
+    sub_main(**{k: v for k, v in vars(args).items() if k != "main"})
+
+def main_generate(src_dir: Path, out_dir: Path, delete: bool):
+    if out_dir.exists() and not out_dir.is_dir():
+        print(f"Destination, if it exists, must be a directory: {out_dir}", file=sys.stderr)
+        raise SystemExit(1)
+    if not src_dir.is_dir():
+        print(f"Source should be a directory: {src_dir}", file=sys.stderr)
+        raise SystemExit(1)
+    if delete:
+        shutil.rmtree(out_dir, ignore_errors=True)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    gen_gallery(Config(), src_dir=src_dir, out_dir=out_dir)
+    render_html(out_dir)
+
+def main_update(out_dir: Path):
+    render_html(out_dir)
+
+if __name__ == '__main__':
+    main()
