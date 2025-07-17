@@ -124,24 +124,33 @@ body:has(.loupe:target) #contact-sheet {
 {% for photo in album.photos %}
 <div class="loupe" id="photo-{{ loop.index }}">
     <picture class="loupe-picture">
-        {#
-        Let the browser pick a thumbnail. Tested with Firefox and Chrome.
-        Advantages:
-        * Correct handling of DPR.
-        * Will not blank the image on resize.
-        * In theory, the browser can make smart decisions, like limiting
-          resolution on data saver modes.
-        Disadvantages:
-        * In the event of a resize, both Firefox and Chrome will start downloading
-          a smaller size image after already having downloaded a still suitable
-          larger resolution image. This is the opposite of a smart decision.
-        * Will not preload an image large enough for full screen.
-        * Will not preload an image large enough to account for screen rotation.
-        #}
         {% for format, thumbs in photo.loupe_thumbs|items %}
         <source type="image/{{format}}"
+{# Using the sizes attribute we could tell the browser to preload an
+image large enough to cover the screen even if resized...
+... if only CSS had a way to represent the size of the screen within
+an expression.
+
+At least there is 100vh and 100vw (viewport size) which makes for a
+good no-script fallback.
+
+JS code will replace these 100vh and 100vw with the actual screen
+size and update it on zoom or screen resolution change. #}
+         data-sizes="max(
+            min($ScreenWidth$, $ScreenHeight$ * {{photo.orig_width}} / {{photo.orig_height}}),
+            min($ScreenHeight$, $ScreenWidth$ * {{photo.orig_width}} / {{photo.orig_height}})
+         )"
+         sizes="max(
+            min(100vw, 100vh * {{photo.orig_width}} / {{photo.orig_height}}),
+            min(100vh, 100vw * {{photo.orig_width}} / {{photo.orig_height}})
+         )"
          srcset="{% for thumb in thumbs|reverse -%}
-                 {{ thumb.url|urlencode }} {{ thumb.w }}w
+{# CSS screen size * DPR may be a fraction of a pixel greater than the actual
+screen resolution, due to limited precision in the browser engines and rounding.
+Since the thumbnails are sized for common screen sizes, it makes sense to add 1
+here so the browser doesn't switch thumb_2560 to thumb_4096 because of screen
+width being calculated as 2560.36 device pixels. #}
+                 {{ thumb.url|urlencode }} {{ thumb.w + 1 }}w
                  {%- if not loop.last %}, {% endif -%}
                  {%- endfor %}">
         {% endfor %}
@@ -182,6 +191,26 @@ window.addEventListener("keydown", function keyDown(ev) {
     ev.preventDefault();
     pad.click();
 });
+
+let prevScreenSize = [0, 0];
+function updatePictureSizes() {
+    const screenWidth = screen.width;
+    const screenHeight = screen.height;
+
+    console.log("Updating each picture 'sizes' attribute to match the current screen.");
+    for (const source of document.querySelectorAll("picture.loupe-picture > source")) {
+        source.sizes = source.getAttribute("data-sizes")
+            .replaceAll("$ScreenWidth$", `${screenWidth}px`)
+            .replaceAll("$ScreenHeight$", `${screenHeight}px`);
+    }
+    prevScreenSize = [screenWidth, screenHeight];
+}
+window.addEventListener("resize", function onResize() {
+    if (screen.width != prevScreenSize[0] || screen.height != prevScreenSize[1])
+        updatePictureSizes();
+})
+updatePictureSizes();
+
 // JS-based tight mode, because HTTP2-3 servers cannot be trusted to respect
 // priorities, and browsers cannot be trusted to request the correct priorities:
 window.addEventListener("load", function onLoad() {
