@@ -112,7 +112,7 @@ body:has(.loupe:target) #contact-sheet {
     top: 0;
     right: 0;
 }
-.photo-buttons > button {
+.photo-buttons > .button {
     vertical-align: middle;
     font-size: 34px;
     width: 60px;
@@ -187,7 +187,8 @@ width being calculated as 2560.36 device pixels. #}
         {{e.ExposureTime}} f/{{e.Aperture}} ISO{{e.ISO}}</p>
     </div>
     <div class="photo-buttons">
-        <button onclick="photoToggleFullScreen(this)">◱</button>
+        <a class="button" title="Download photo" download href="{{ photo.orig_url }}">⬇</a>
+        <button class="button" title="Toggle full-screen" onclick="photoToggleFullScreen(this)">◱</button>
     </div>
 </div>
 {% endfor %}
