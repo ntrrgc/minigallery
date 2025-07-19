@@ -199,6 +199,12 @@ width being calculated as 2560.36 device pixels. #}
 {% endfor %}
 <script>
 window.addEventListener("keydown", function keyDown(ev) {
+    // Full-screen
+    if (ev.key == "f" || (ev.altKey && ev.key == "Enter")) {
+        photoToggleFullScreen(this);
+        return;
+    }
+    // Navigation
     const padName = {
         "ArrowLeft": "left",
         "PageUp": "left",
