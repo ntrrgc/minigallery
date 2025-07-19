@@ -256,6 +256,51 @@ window.addEventListener("load", function onLoad() {
     }
 });
 
+async function imageLoadAndDecodePromise(img) {
+    // .decode() fails in Firefox if the img.loading == "lazy", even if it
+    // the image has already been downloaded.
+    img.loading = "eager";
+    if (!img.complete) {
+        await new Promise((resolve) => {
+            img.addEventListener("load", () => resolve(), {once: true});
+        });
+    }
+    await img.decode();
+}
+function imgWithNumber(n) {
+    return document.querySelector(`#photo-${n} picture.loupe-picture > img`);
+}
+
+// Called on hashchange and initial load.
+// Schedules adjacent images to decode once the loupe for the current photo has loaded.
+function handleHashUpdate(newHash) {
+    async function preloadPhoto(n) {
+        const img = imgWithNumber(n);
+        if (!img)
+            return;
+        console.log(`Loading photo ${n}`);
+        await imageLoadAndDecodePromise(img);
+        console.log(`Decoded photo ${n}`);
+    }
+
+    const match = new RegExp("^#photo-(\\d+)$").exec(newHash);
+    if (!match)
+        return;
+    const n = parseInt(match[1]);
+    imageLoadAndDecodePromise(imgWithNumber(n))
+        .then(() => {
+            console.log(`Image ${n} is loaded, preparing neighbors...`)
+        })
+        .then(() => Promise.all([
+            preloadPhoto(n + 1),
+            preloadPhoto(n - 1),
+        ]));
+}
+window.addEventListener("hashchange", (ev) => {
+    handleHashUpdate(new URL(ev.newURL).hash);
+});
+handleHashUpdate(location.hash);
+
 function photoToggleFullScreen(a) {
     if (document.fullscreenElement) {
         document.exitFullscreen();
