@@ -239,7 +239,7 @@ window.addEventListener("keydown", function keyDown(ev) {
         "Backspace": "up",
         "ArrowUp": "up",
     }[ev.key];
-    if (!padName)
+    if (!padName || ev.altKey || ev.ctrlKey || ev.metaKey)
         return;
     const pad = document.querySelector(`.loupe.active_page .nav-pad-${padName}`);
     if (!pad)
