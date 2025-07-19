@@ -2,9 +2,30 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<base href="{{ base_url }}">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="data:," />
-<title>{{ album.name }}</title>
+<title>{% if photo_num %}#{{ photo_num }} - {% endif %}{{ album.name }}</title>
+
+{% if photo_num %}
+{% set e = photo.exif %}
+<meta property="og:title" content="#{{ photo_num }} - {{ album.name }}">
+<meta property="og:description" content="{{e.FocalLengthIn35mmFormat}} {{e.ExposureTime}} f/{{e.Aperture}} ISO{{e.ISO}}">
+<meta property="og:type" content="article">
+{# OpenGraph metadata requires absolute URLs for og:image.
+Sadly, this means that to get previews working in chat applications and social
+media, it is necessary to hardcode the URL where the gallery will be deployed. #}
+{% if abs_base_url %}
+<meta property="og:image" content="{{ abs_base_url }}{{ photo.loupe_thumbs.jpeg.0.url }}">
+<meta property="twitter:image" content="{{ abs_base_url }}{{ photo.loupe_thumbs.jpeg.0.url }}">
+{% endif %}
+<meta property="og:image:width" content="{{ photo.loupe_thumbs.jpeg.0.w }}">
+<meta property="og:image:height" content="{{ photo.loupe_thumbs.jpeg.0.h }}">
+<meta property="og:image:type" content="image/jpeg">
+<!-- Necessary to make chat applications show photo previews. -->
+<meta property="twitter:card" content="summary_large_image">
+{% endif %}
+
 <style>
 *, *:before, *:after {
     box-sizing: border-box;
@@ -36,13 +57,13 @@
     top: 0; left: 0; bottom: 0; right: 0;
     background: black;
 }
-.loupe:target {
+.loupe.active_page {
     display: block; /* Make visible */
 }
-body:has(.loupe:target) {
+body:has(.loupe.active_page) {
     overflow: hidden; /* Disable scroll bars while in the loupe */
 }
-body:has(.loupe:target) #contact-sheet {
+body:has(.loupe.active_page) #contact-sheet {
     /* Prevent tab key from reaching the contact sheet while in the loupe. */
     visibility: hidden;
 }
@@ -136,14 +157,15 @@ body:has(.loupe:target) #contact-sheet {
 </header>
 <div id="contact-sheet">
     {%- for photo in album.photos %}
-    <a class="contact" href="#photo-{{loop.index}}" style="
-     width: {{photo.contact_region.2}}px;
-     background-position: -{{photo.contact_region.0}}px -{{photo.contact_region.1}}px;
-    "></a>
+    <a class="contact" href="photo-{{loop.index}}/" onclick="navigate(this, event)"
+     style="width: {{photo.contact_region.2}}px;
+      background-position: -{{photo.contact_region.0}}px -{{photo.contact_region.1}}px;
+     "></a>
     {%- endfor %}
 </div>
 {% for photo in album.photos %}
-<div class="loupe" id="photo-{{ loop.index }}">
+<div id="photo-{{ loop.index }}" class="loupe
+ {%- if loop.index == photo_num %} active_page{% endif %}">
     <picture class="loupe-picture">
         {% for format, thumbs in photo.loupe_thumbs|items %}
         <source type="image/{{format}}"
@@ -179,12 +201,15 @@ width being calculated as 2560.36 device pixels. #}
     </picture>
     <div class="nav-pads">
         {% if not loop.first %}
-        <a class="nav-pad-left" href="#photo-{{ loop.index - 1 }}" title="Previous image in gallery">🡰</a>
+        <a class="nav-pad-left" href="photo-{{ loop.index - 1 }}/"
+         onclick="navigate(this, event)" title="Previous image in gallery">🡰</a>
         {% endif %}
         {% if not loop.last %}
-        <a class="nav-pad-right" href="#photo-{{ loop.index + 1}}" title="Next image in gallery">🡲</a>
+        <a class="nav-pad-right" href="photo-{{ loop.index + 1}}/"
+         onclick="navigate(this, event)" title="Next image in gallery">🡲</a>
         {% endif %}
-        <a class="nav-pad-up" href="#" title="Go back to gallery">🡱</a>
+        <a class="nav-pad-up" href=""
+         onclick="navigate(this, event)" title="Go back to gallery">🡱</a>
     </div>
     <div class="photo-exif">
         {% set e = photo.exif %}
@@ -216,7 +241,7 @@ window.addEventListener("keydown", function keyDown(ev) {
     }[ev.key];
     if (!padName)
         return;
-    const pad = document.querySelector(`.loupe:target .nav-pad-${padName}`);
+    const pad = document.querySelector(`.loupe.active_page .nav-pad-${padName}`);
     if (!pad)
         return; // not in loupe
     ev.preventDefault();
@@ -270,23 +295,49 @@ async function imageLoadAndDecodePromise(img) {
 function imgWithNumber(n) {
     return document.querySelector(`#photo-${n} picture.loupe-picture > img`);
 }
+async function preloadPhoto(n) {
+    const img = imgWithNumber(n);
+    if (!img)
+        return;
+    console.log(`Loading photo ${n}`);
+    await imageLoadAndDecodePromise(img);
+    console.log(`Decoded photo ${n}`);
+}
+
+function navigate(el, event) {
+    if (!location.protocol.startsWith("http")) {
+        // file:/// URLs have pushState is disabled, so we return without
+        // preventing the propagation of the event to degrade gracefully.
+        // Also, browsers don't render index.html when loading a directory URL,
+        // so we add it here:
+        el.href += "index.html";
+        return;
+    }
+    const url = el.getAttribute("href");
+    event.preventDefault();
+    // Using "" as relative URL in Firefox doesn't work, so we use "." instead,
+    // which has the same effect.
+    history.pushState({url: url}, "", url == "" ? "." : url);
+    makePageActive(url);
+}
 
 // Called on hashchange and initial load.
 // Schedules adjacent images to decode once the loupe for the current photo has loaded.
-function handleHashUpdate(newHash) {
-    async function preloadPhoto(n) {
-        const img = imgWithNumber(n);
-        if (!img)
-            return;
-        console.log(`Loading photo ${n}`);
-        await imageLoadAndDecodePromise(img);
-        console.log(`Decoded photo ${n}`);
+const albumName = {{ album.name | tojson }};
+function makePageActive(pageUrl) {
+    const match = new RegExp("^photo-(\\d+)/(?:index\.html)?$").exec(pageUrl);
+    for (const el of document.querySelectorAll(".active_page")) {
+        el.classList.remove("active_page");
+    }
+    if (!match) { // Contact sheet
+        document.title = albumName;
+        return;
     }
 
-    const match = new RegExp("^#photo-(\\d+)$").exec(newHash);
-    if (!match)
-        return;
+    // Loupe
     const n = parseInt(match[1]);
+    document.title = `#${n} - ${albumName}`;
+    document.getElementById(`photo-${n}`).classList.add("active_page");
     imageLoadAndDecodePromise(imgWithNumber(n))
         .then(() => {
             console.log(`Image ${n} is loaded, preparing neighbors...`)
@@ -296,10 +347,10 @@ function handleHashUpdate(newHash) {
             preloadPhoto(n - 1),
         ]));
 }
-window.addEventListener("hashchange", (ev) => {
-    handleHashUpdate(new URL(ev.newURL).hash);
+window.addEventListener("popstate", (ev) => {
+    makePageActive(ev.state.url);
 });
-handleHashUpdate(location.hash);
+makePageActive(location.href.slice(document.baseURI.length));
 
 function photoToggleFullScreen(a) {
     if (document.fullscreenElement) {

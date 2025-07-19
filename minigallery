@@ -420,9 +420,11 @@ def gen_gallery(config: Config, src_dir: Path, out_dir: Path):
     with open(out_dir/"album.json", "w") as f:
         json.dump(album, f, indent=2)
 
-def render_html(out_dir: Path):
+def render_html(out_dir: Path, abs_base_url: Optional[str]):
+    if abs_base_url is not None and not abs_base_url.endswith("/"):
+        abs_base_url += "/"  # The absolute base URL should be slash-terminated
     with open(out_dir/"album.json", "r") as f:
-        album = json.load(f)
+        album = cast(Album, json.load(f))
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(Path(__file__).parent/"templates"),
         autoescape=jinja2.select_autoescape(),
@@ -431,10 +433,20 @@ def render_html(out_dir: Path):
         lstrip_blocks=True,
         keep_trailing_newline=False,
     )
-    template = env.get_template("index.html.j2")
-    html = template.render(album=album)
-    with open(out_dir/"index.html", "w") as f:
-        f.write(html)
+    t_base = env.get_template("base.html.j2")
+    def render(path: Path|str, photo_num: Optional[int], **kwargs: Any):
+        path = Path(path)
+        base_url = Path("").relative_to(path.parent, walk_up=True)
+        html = t_base.render(album=album, base_url=base_url,
+            abs_base_url=abs_base_url,
+            photo_num=photo_num, **kwargs)
+        Path(out_dir/path).parent.mkdir(exist_ok=True, parents=True)
+        with open(out_dir/path, "w") as f:
+            f.write(html)
+
+    render("index.html", photo_num=None)
+    for photo_num, photo in enumerate(album["photos"], 1):
+        render(f"photo-{photo_num}/index.html", photo_num=photo_num, photo=photo)
 
 def main():
     parser = ArgumentParser(description="Generate a static HTML photo gallery for a single album")
@@ -444,17 +456,19 @@ def main():
     parser_generate.add_argument("src_dir", type=Path, help="Input directory with your image files")
     parser_generate.add_argument("out_dir", type=Path, help="Directory that will be filled with your HTML photo gallery")
     parser_generate.add_argument("--delete", help="Delete the destination directory if it already exists before re-generating.")
+    parser_generate.add_argument("--url", dest="abs_base_url", nargs='?', type=str, help="URL where this gallery will be hosted. Necessary for OpenGraph previews.")
     parser_generate.set_defaults(main=main_generate)
 
     parser_update = subparsers.add_parser("update", description="Update an existing HTML photo gallery without recompressing images. Used for development-only.")
     parser_update.add_argument("out_dir", type=Path, help="Directory that will be filled with your HTML photo gallery")
+    parser_update.add_argument("--url", dest="abs_base_url", nargs='?', type=str, help="URL where this gallery will be hosted. Necessary for OpenGraph previews.")
     parser_update.set_defaults(main=main_update)
 
     args = parser.parse_args()
     sub_main = args.main
     sub_main(**{k: v for k, v in vars(args).items() if k != "main"})
 
-def main_generate(src_dir: Path, out_dir: Path, delete: bool):
+def main_generate(src_dir: Path, out_dir: Path, delete: bool, abs_base_url: Optional[str]):
     if out_dir.exists() and not out_dir.is_dir():
         print(f"Destination, if it exists, must be a directory: {out_dir}", file=sys.stderr)
         raise SystemExit(1)
@@ -465,10 +479,10 @@ def main_generate(src_dir: Path, out_dir: Path, delete: bool):
         shutil.rmtree(out_dir, ignore_errors=True)
     out_dir.mkdir(parents=True, exist_ok=True)
     gen_gallery(Config(), src_dir=src_dir, out_dir=out_dir)
-    render_html(out_dir)
+    render_html(out_dir, abs_base_url=abs_base_url)
 
-def main_update(out_dir: Path):
-    render_html(out_dir)
+def main_update(out_dir: Path, abs_base_url: Optional[str]):
+    render_html(out_dir, abs_base_url=abs_base_url)
 
 if __name__ == '__main__':
     main()
