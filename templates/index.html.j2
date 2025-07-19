@@ -107,6 +107,22 @@ body:has(.loupe:target) #contact-sheet {
 .photo-exif p {
     margin: 0;
 }
+.photo-buttons {
+    position: fixed;
+    top: 0;
+    right: 0;
+}
+.photo-buttons > button {
+    vertical-align: middle;
+    font-size: 34px;
+    width: 60px;
+    height: 60px;
+    background: none;
+    border: 0;
+    color: white;
+    text-shadow: 0 0 5px black;
+    cursor: pointer;
+}
 </style>
 </head>
 <body>
@@ -170,6 +186,9 @@ width being calculated as 2560.36 device pixels. #}
         <p>{{e.FocalLengthIn35mmFormat}}<sup><abbr title="35mm equivalent focal length">eq</abbr></sup>
         {{e.ExposureTime}} f/{{e.Aperture}} ISO{{e.ISO}}</p>
     </div>
+    <div class="photo-buttons">
+        <button onclick="photoToggleFullScreen(this)">◱</button>
+    </div>
 </div>
 {% endfor %}
 <script>
@@ -224,6 +243,14 @@ window.addEventListener("load", function onLoad() {
         img.loading = "eager";
     }
 });
+
+function photoToggleFullScreen(a) {
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
+        return;
+    }
+    document.documentElement.requestFullscreen();
+}
 </script>
 </body>
 </html>
