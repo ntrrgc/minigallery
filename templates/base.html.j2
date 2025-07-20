@@ -350,7 +350,9 @@ function makePageActive(pageUrl) {
 window.addEventListener("popstate", (ev) => {
     makePageActive(ev.state.url);
 });
-makePageActive(location.href.slice(document.baseURI.length));
+const initialPageUrl = location.href.slice(document.baseURI.length);
+history.replaceState({url: initialPageUrl}, "", location.href);
+makePageActive(initialPageUrl);
 
 function photoToggleFullScreen(a) {
     if (document.fullscreenElement) {
