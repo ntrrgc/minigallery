@@ -420,7 +420,11 @@ def gen_gallery(config: Config, src_dir: Path, out_dir: Path):
     with open(out_dir/"album.json", "w") as f:
         json.dump(album, f, indent=2)
 
+def copy_assets(out_dir: Path):
+    shutil.copy(Path(__file__).parent/"icons/favicon.png", out_dir/"favicon.png")
+
 def render_html(out_dir: Path, abs_base_url: Optional[str]):
+    copy_assets(out_dir)
     if abs_base_url is not None and not abs_base_url.endswith("/"):
         abs_base_url += "/"  # The absolute base URL should be slash-terminated
     with open(out_dir/"album.json", "r") as f:
