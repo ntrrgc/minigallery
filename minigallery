@@ -421,7 +421,12 @@ def gen_gallery(config: Config, src_dir: Path, out_dir: Path):
         json.dump(album, f, indent=2)
 
 def copy_assets(out_dir: Path):
-    shutil.copy(Path(__file__).parent/"icons/favicon.png", out_dir/"favicon.png")
+    src_icons_dir = Path(__file__).parent/"icons"
+    out_icons_dir = out_dir/"icons"
+    out_icons_dir.mkdir(exist_ok=True)
+
+    shutil.copy(src_icons_dir/"favicon.png", out_dir/"favicon.png")
+    shutil.copy(src_icons_dir/"icons.svg", out_icons_dir/"icons.svg")
 
 def render_html(out_dir: Path, abs_base_url: Optional[str]):
     copy_assets(out_dir)

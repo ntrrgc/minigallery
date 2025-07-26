@@ -1,0 +1,5 @@
+lxml
+lxml-stubs
+Pillow
+jinja2
+numpy

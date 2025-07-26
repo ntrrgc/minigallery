@@ -41,6 +41,24 @@ media, it is necessary to hardcode the URL where the gallery will be deployed. #
     );
     margin: 4px;
 }
+.icon-bg {
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-color: transparent;
+    background-size: 48px;
+}
+.icon-bg:hover, .icon-bg:focus {
+    background-size: 52px;
+}
+.icon-bg:active {
+    background-size: 46px;
+}
+.icon-download { background-image: url(icons/icons.svg#page-download); }
+.icon-enter-fullscreen { background-image: url(icons/icons.svg#page-enter-fullscreen); }
+.icon-exit-fullscreen { background-image: url(icons/icons.svg#page-exit-fullscreen); }
+.icon-prev { background-image: url(icons/icons.svg#page-prev); }
+.icon-next { background-image: url(icons/icons.svg#page-next); }
+.icon-return { background-image: url(icons/icons.svg#page-return); }
 #contact-sheet {
     display: flex;
     flex-flow: row wrap;
@@ -82,8 +100,6 @@ body:has(.loupe.active_page) #contact-sheet {
     display: block;
     position: fixed;
     color: white;
-    text-shadow: 0 0 5px black;
-    font-size: 52px;
     text-decoration: none;
     opacity: 0;
 }
@@ -94,26 +110,21 @@ body:has(.loupe.active_page) #contact-sheet {
 .nav-pad-left, .nav-pad-right {
     top: 0; bottom: 0;
     width: 30vw;
-    line-height: 100vh;
 }
 .nav-pad-up {
     top: 0px;
     width: 40vw;
     height: 30vh;
-    padding-top: 20px;
-    align-content: top;
+    background-position-y: top 20px;
     left: 0; right: 0; margin: 0 auto; /* center pad horizontally */
-    text-align: center;
 }
 .nav-pad-left {
-    text-align: left;
     left: 0;
-    padding-left: 10px;
+    background-position-x: left 10px;
 }
 .nav-pad-right {
-    text-align: right;
     right: 0;
-    padding-right: 10px;
+    background-position-x: right 10px;
 }
 .photo-exif {
     position: fixed;
@@ -143,7 +154,6 @@ body:has(.loupe.active_page) #contact-sheet {
     width: 60px;
     height: 60px;
     line-height: 60px;
-    background: none;
     border: 0;
     color: white;
     text-shadow: 0 0 5px black;
@@ -201,15 +211,15 @@ width being calculated as 2560.36 device pixels. #}
     </picture>
     <div class="nav-pads">
         {% if not loop.first %}
-        <a class="nav-pad-left" href="photo-{{ loop.index - 1 }}/"
-         onclick="navigate(this, event)" title="Previous image in gallery">🡰</a>
+        <a class="nav-pad-left icon-bg icon-prev" href="photo-{{ loop.index - 1 }}/"
+         onclick="navigate(this, event)" title="Previous image in gallery"></a>
         {% endif %}
         {% if not loop.last %}
-        <a class="nav-pad-right" href="photo-{{ loop.index + 1}}/"
-         onclick="navigate(this, event)" title="Next image in gallery">🡲</a>
+        <a class="nav-pad-right icon-bg icon-next" href="photo-{{ loop.index + 1}}/"
+         onclick="navigate(this, event)" title="Next image in gallery"></a>
         {% endif %}
-        <a class="nav-pad-up" href=""
-         onclick="navigate(this, event)" title="Go back to gallery">🡱</a>
+        <a class="nav-pad-up icon-bg icon-return" href=""
+         onclick="navigate(this, event)" title="Go back to gallery"></a>
     </div>
     <div class="photo-exif">
         {% set e = photo.exif %}
@@ -217,8 +227,8 @@ width being calculated as 2560.36 device pixels. #}
         {{e.ExposureTime}} f/{{e.Aperture}} ISO{{e.ISO}}</p>
     </div>
     <div class="photo-buttons">
-        <a class="button" title="Download photo" download href="{{ photo.orig_url }}">⬇</a>
-        <button class="button" title="Toggle full-screen" onclick="photoToggleFullScreen(this)">◱</button>
+        <a class="button icon-bg icon-download" title="Download photo" download href="{{ photo.orig_url }}"></a>
+        <button class="button icon-bg icon-enter-fullscreen" title="Toggle full-screen" onclick="photoToggleFullScreen(this)"></button>
     </div>
 </div>
 {% endfor %}
