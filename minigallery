@@ -441,7 +441,7 @@ def render_html(out_dir: Path, abs_base_url: Optional[str]):
     def url_hash(path: str) -> str:
         with open(out_dir / path, "rb") as f:
             digest = hashlib.file_digest(f, "md5").digest()
-        # 6 bytes (48 bits) of digest -> 12 bytes of b64
+        # 6 bytes (48 bits) of digest -> 12 bytes of hex
         cache_tag = b2a_hex(digest[:6]).decode()
         return urllib.parse.quote(path) + f"?{cache_tag}"
     env = jinja2.Environment(
