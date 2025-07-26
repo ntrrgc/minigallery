@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <base href="{{ base_url }}">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="shortcut icon" href="favicon.png?ab402a4c1c582c8d24c37e476298a72b" />
+<link rel="shortcut icon" href="{{ 'favicon.png' | url_hash }}" />
 <title>{% if photo_num %}#{{ photo_num }} - {% endif %}{{ album.name }}</title>
 
 {% if photo_num %}
@@ -16,8 +16,8 @@
 Sadly, this means that to get previews working in chat applications and social
 media, it is necessary to hardcode the URL where the gallery will be deployed. #}
 {% if abs_base_url %}
-<meta property="og:image" content="{{ abs_base_url }}{{ photo.loupe_thumbs.jpeg.0.url }}">
-<meta property="twitter:image" content="{{ abs_base_url }}{{ photo.loupe_thumbs.jpeg.0.url }}">
+<meta property="og:image" content="{{ abs_base_url + photo.loupe_thumbs.jpeg.0.url | url_hash }}">
+<meta property="twitter:image" content="{{ abs_base_url + photo.loupe_thumbs.jpeg.0.url | url_hash }}">
 {% endif %}
 <meta property="og:image:width" content="{{ photo.loupe_thumbs.jpeg.0.w }}">
 <meta property="og:image:height" content="{{ photo.loupe_thumbs.jpeg.0.h }}">
@@ -34,7 +34,7 @@ media, it is necessary to hardcode the URL where the gallery will be deployed. #
     background-image: image-set(
         {% for sheet in album.contact_sheets %}
         {% for format, url in sheet.url_by_format|items %}
-        "{{ url | urlencode}}" {{ sheet.dpr }}x type("image/{{ format }}")
+        "{{ url | url_hash }}" {{ sheet.dpr }}x type("image/{{ format }}")
         {%- if not loop.last %}, {% endif +%}
         {% endfor %}
         {% endfor %}
@@ -53,12 +53,12 @@ media, it is necessary to hardcode the URL where the gallery will be deployed. #
 .icon-bg:active {
     background-size: 46px;
 }
-.icon-download { background-image: url(icons/icons.svg#page-download); }
-.icon-enter-fullscreen { background-image: url(icons/icons.svg#page-enter-fullscreen); }
-.icon-exit-fullscreen { background-image: url(icons/icons.svg#page-exit-fullscreen); }
-.icon-prev { background-image: url(icons/icons.svg#page-prev); }
-.icon-next { background-image: url(icons/icons.svg#page-next); }
-.icon-return { background-image: url(icons/icons.svg#page-return); }
+.icon-download { background-image: url({{ 'icons/icons.svg' | url_hash }}#page-download); }
+.icon-enter-fullscreen { background-image: url({{ 'icons/icons.svg' | url_hash }}#page-enter-fullscreen); }
+.icon-exit-fullscreen { background-image: url({{ 'icons/icons.svg' | url_hash }}#page-exit-fullscreen); }
+.icon-prev { background-image: url({{ 'icons/icons.svg' | url_hash }}#page-prev); }
+.icon-next { background-image: url({{ 'icons/icons.svg' | url_hash }}#page-next); }
+.icon-return { background-image: url({{ 'icons/icons.svg' | url_hash }}#page-return); }
 #contact-sheet {
     display: flex;
     flex-flow: row wrap;
@@ -203,7 +203,7 @@ screen resolution, due to limited precision in the browser engines and rounding.
 Since the thumbnails are sized for common screen sizes, it makes sense to add 1
 here so the browser doesn't switch thumb_2560 to thumb_4096 because of screen
 width being calculated as 2560.36 device pixels. #}
-                 {{ thumb.url|urlencode }} {{ thumb.w + 1 }}w
+                 {{ thumb.url|url_hash }} {{ thumb.w + 1 }}w
                  {%- if not loop.last %}, {% endif -%}
                  {%- endfor %}">
         {% endfor %}

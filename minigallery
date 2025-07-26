@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 from argparse import ArgumentParser
+from binascii import b2a_hex
 from collections.abc import Sequence
+from functools import lru_cache
+import hashlib
 from itertools import chain
 import sys
 import json
@@ -434,6 +437,13 @@ def render_html(out_dir: Path, abs_base_url: Optional[str]):
         abs_base_url += "/"  # The absolute base URL should be slash-terminated
     with open(out_dir/"album.json", "r") as f:
         album = cast(Album, json.load(f))
+    @lru_cache
+    def url_hash(path: str) -> str:
+        with open(out_dir / path, "rb") as f:
+            digest = hashlib.file_digest(f, "md5").digest()
+        # 6 bytes (48 bits) of digest -> 12 bytes of b64
+        cache_tag = b2a_hex(digest[:6]).decode()
+        return urllib.parse.quote(path) + f"?{cache_tag}"
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(Path(__file__).parent/"templates"),
         autoescape=jinja2.select_autoescape(),
@@ -442,6 +452,7 @@ def render_html(out_dir: Path, abs_base_url: Optional[str]):
         lstrip_blocks=True,
         keep_trailing_newline=False,
     )
+    env.filters["url_hash"] = url_hash # type: ignore
     t_base = env.get_template("base.html.j2")
     def render(path: Path|str, photo_num: Optional[int], **kwargs: Any):
         path = Path(path)
