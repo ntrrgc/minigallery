@@ -47,11 +47,13 @@ media, it is necessary to hardcode the URL where the gallery will be deployed. #
     background-color: transparent;
     background-size: 48px;
 }
-.icon-bg:hover, .icon-bg:focus {
+.icon-bg:hover, .icon-bg:focus,
+:hover > .icon-bg, :focus > .icon-bg {
     background-size: 52px;
 }
-.icon-bg:active {
-    background-size: 46px;
+.icon-bg:active,
+:active > .icon-bg {
+    background-size: 46px !important; /* take priority over the :hover rules */
 }
 .icon-download { background-image: url({{ 'icons/icons.svg' | url_hash }}#page-download); }
 .icon-enter-fullscreen { background-image: url({{ 'icons/icons.svg' | url_hash }}#page-enter-fullscreen); }
@@ -99,9 +101,12 @@ body:has(.loupe.active_page) #contact-sheet {
 .nav-pad-left, .nav-pad-right, .nav-pad-up {
     display: block;
     position: fixed;
-    color: white;
     text-decoration: none;
     opacity: 0;
+}
+.nav-pad-left > div, .nav-pad-right > div, .nav-pad-up > div {
+    position: absolute;
+    width: 48px; height: 48px;
 }
 .nav-pad-left:hover, .nav-pad-right:hover, .nav-pad-up:hover,
 .nav-pad-left:focus, .nav-pad-right:focus, .nav-pad-up:focus {
@@ -115,16 +120,29 @@ body:has(.loupe.active_page) #contact-sheet {
     top: 0px;
     width: 40vw;
     height: 30vh;
-    background-position-y: top 20px;
     left: 0; right: 0; margin: 0 auto; /* center pad horizontally */
 }
 .nav-pad-left {
     left: 0;
-    background-position-x: left 10px;
 }
 .nav-pad-right {
     right: 0;
-    background-position-x: right 10px;
+}
+.nav-pad-left > div {
+    left: calc(10px + 48px / 2);
+    top: 50vh;
+    transform: translate(-50%, -50%);
+}
+.nav-pad-right > div {
+    right: calc(10px + 48px / 2);
+    top: 50vh;
+    transform: translate(50%, -50%);
+}
+.nav-pad-up > div {
+    position: absolute;
+    top: calc(10px + 48px / 2);
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 .photo-exif {
     position: fixed;
@@ -211,15 +229,15 @@ width being calculated as 2560.36 device pixels. #}
     </picture>
     <div class="nav-pads">
         {% if not loop.first %}
-        <a class="nav-pad-left icon-bg icon-prev" href="photo-{{ loop.index - 1 }}/"
-         onclick="navigate(this, event)" title="Previous image in gallery"></a>
+        <a class="nav-pad nav-pad-left" href="photo-{{ loop.index - 1 }}/"
+         onclick="navigate(this, event)" title="Previous image in gallery"><div class="icon-bg icon-prev"></div></a>
         {% endif %}
         {% if not loop.last %}
-        <a class="nav-pad-right icon-bg icon-next" href="photo-{{ loop.index + 1}}/"
-         onclick="navigate(this, event)" title="Next image in gallery"></a>
+        <a class="nav-pad nav-pad-right" href="photo-{{ loop.index + 1}}/"
+         onclick="navigate(this, event)" title="Next image in gallery"><div class="icon-bg icon-next"></div></a>
         {% endif %}
-        <a class="nav-pad-up icon-bg icon-return" href=""
-         onclick="navigate(this, event)" title="Go back to gallery"></a>
+        <a class="nav-pad nav-pad-up" href=""
+         onclick="navigate(this, event)" title="Go back to gallery"><div class="icon-bg icon-return"></div></a>
     </div>
     <div class="photo-exif">
         {% set e = photo.exif %}
