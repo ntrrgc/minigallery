@@ -48,12 +48,12 @@ media, it is necessary to hardcode the URL where the gallery will be deployed. #
     background-size: 48px;
 }
 .icon-bg:hover, .icon-bg:focus,
-:hover > .icon-bg, :focus > .icon-bg {
+.nav-pad:hover > .icon-bg, .nav-pad:focus > .icon-bg {
     background-size: 52px;
 }
 .icon-bg:active,
-:active > .icon-bg {
-    background-size: 46px !important; /* take priority over the :hover rules */
+.nav-pad:active > .icon-bg {
+    background-size: 46px;
 }
 .icon-download { background-image: url({{ 'icons/icons.svg' | url_hash }}#page-download); }
 .icon-enter-fullscreen { background-image: url({{ 'icons/icons.svg' | url_hash }}#page-enter-fullscreen); }
